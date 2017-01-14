@@ -186,16 +186,6 @@ public class PlayerScript : MonoBehaviour {
 			}
 		return null;
 		}
-	}
-
-	void OnCollisionEnter(Collider other) {
-     /*  if (rb.velocity.y <= 0 && (other.name.Contains("Plat") || other.name.Contains("Floor")))
-        {
-            jumps = 2;
-        }
-        else if (other.name.Contains("Wall") || other.name.Contains("Ceil"))
-            jumps += 1;*/
-		}
 
     private IEnumerator Fall()
     {
@@ -206,7 +196,7 @@ public class PlayerScript : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         feet.isTrigger = false;
         Debug.Log("Fall complete");
-	}
+    }
 
     private IEnumerator Jump()
     {
@@ -220,3 +210,4 @@ public class PlayerScript : MonoBehaviour {
         Debug.Log("Jump Complete");
     }
 }
+
