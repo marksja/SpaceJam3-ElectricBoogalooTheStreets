@@ -24,5 +24,12 @@ public class GameScript : MonoBehaviour {
 
 	}
 
+    float Find_Delta_Hype(){
+        float Comeback_Hype;
+        float Close_Game_Hype;
+        float Round_Hype;
+         
+    }
+
     
 }

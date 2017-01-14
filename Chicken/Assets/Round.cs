@@ -37,8 +37,7 @@ public class Round : MonoBehaviour {
 
     }
 
-    // Update is called once per frame
-    void FixedUpdate () {
+    void Update () {
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
@@ -50,6 +49,8 @@ public class Round : MonoBehaviour {
             {
                 currentPhase = 2;
                 timeRemaining = FIGHTLIMIT;
+                P1S.damageable = true;
+                P2S.damageable = false;
             }
             else if (currentPhase == 2)
             {
@@ -71,6 +72,21 @@ public class Round : MonoBehaviour {
                 }
             case 2:
                 {
+                   
+                    if(P1S.HP <= 0){
+                        //Player 1 loses
+                        P1S.moveable = false;
+                        P2S.moveable = false;
+                        //Display victory screen for player 2
+                        //Play of the game, etc
+                    }
+                    if(P2S.HP <= 0){
+                        //Player 2 loses
+                        P1S.moveable = false;
+                        P2S.moveable = false;
+                        //Display victory screen for player 1
+                        //Play of the game, etc
+                    }
                     break;
                 }
         }
