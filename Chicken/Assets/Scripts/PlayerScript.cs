@@ -3,8 +3,9 @@ using System.Collections;
 
 public class PlayerScript : MonoBehaviour {
     //stats
-    int HP = 3;
-    int SCORE = 0;
+    public int HP = 3;
+    public int SCORE = 0;   //0-3
+    public string PLAYERSTATE = "neutral";
 
 	int last_used;
 	float cool_time;
