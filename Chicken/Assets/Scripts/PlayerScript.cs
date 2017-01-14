@@ -13,7 +13,7 @@ public class PlayerScript : MonoBehaviour {
 	public float[] cooldown;
 	public bool can_attack;
 	public bool can_jump;
-	public bool a_disabled;	
+	public bool a_disabled;
 	public bool b_disabled;
 	public bool x_disabled;
 	public bool y_disabled;
@@ -399,16 +399,6 @@ public class PlayerScript : MonoBehaviour {
 			}
 		return null;
 		}
-	}
-
-	void OnCollisionEnter(Collider other) {
-       if (rb.velocity.y <= 0 && (other.name.Contains("Plat") || other.name.Contains("Floor")))
-        {
-            jumps = 2;
-        }
-        else if (other.name.Contains("Wall") || other.name.Contains("Ceil"))
-            jumps += 1;
-		}
 
     private IEnumerator Fall()
     {
@@ -433,4 +423,5 @@ public class PlayerScript : MonoBehaviour {
         Debug.Log("Jump Complete");
     }
 }
->>>>>>> d06f5a0525855318fe460d4f7b4b7b4d2465f2a0*/
+
+    */
