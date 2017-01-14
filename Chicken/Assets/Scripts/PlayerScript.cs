@@ -143,7 +143,7 @@ public class PlayerScript : MonoBehaviour {
 				direction = -1;
 			}
 
-			if(y > .9 && jumps > 0 && !noJumping)
+			if(y > .5 && jumps > 0 && !noJumping)
 	        {
 	            StartCoroutine("Jump");
 	            noJumping = true;
@@ -197,6 +197,8 @@ public class PlayerScript : MonoBehaviour {
 		Debug.Log("A attack used");
 		Quick hitbox = (Quick)Instantiate(hitbox_quick, transform.position, Quaternion.identity);
 		hitbox.transform.position += new Vector3(1f, 0, 0) * direction;
+		hitbox.GetComponent<Quick>().player_owner = name[6];
+		hitbox.GetComponent<Quick>().direction = direction;
 		hitbox.transform.parent = transform;
 		Destroy(hitbox.gameObject, length[0]);
 	}
@@ -204,8 +206,9 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("B attack used");
-		Lazor proj = (Lazor)Instantiate(projectile, transform.position, Quaternion.identity);
+		Lazor proj = (Lazor)Instantiate(projectile, transform.position + Vector3.right*1.5f*direction, Quaternion.identity);
 		proj.GetComponent<Rigidbody>().AddForce(500f * direction, 0, 0);
+		proj.GetComponent<Lazor>().player_owner = name[6];
 		Destroy(proj.gameObject, 5);
 	}
 	void X_Attack(){
@@ -215,6 +218,7 @@ public class PlayerScript : MonoBehaviour {
 		attacking = true;
 		Dash hitbox = (Dash)Instantiate(hitbox_dash, transform.position, Quaternion.identity);
 		hitbox.transform.parent = transform;
+		hitbox.GetComponent<Dash>().player_owner = name[6];
 		Destroy(hitbox.gameObject, length[2]);
 		attack_counter = 0.0f;
 	}
@@ -224,6 +228,8 @@ public class PlayerScript : MonoBehaviour {
 		Debug.Log("Y attack used");
 		Swipe hitbox = (Swipe)Instantiate(hitbox_arc, transform.position, Quaternion.Euler(0,0, 45 + (-(direction - 1) * 45)));
 		hitbox.transform.parent = transform;
+		hitbox.GetComponent<Swipe>().player_owner = name[6];
+		hitbox.GetComponent<Swipe>().direction = direction;
 		attacking = true;
 		hb = hitbox.gameObject;
 		Destroy(hitbox.gameObject, length[3] + .05f);

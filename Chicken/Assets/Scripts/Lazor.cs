@@ -3,10 +3,12 @@ using System.Collections;
 
 public class Lazor : MonoBehaviour {
 
-	bool hit;
+	public int player_owner;
+	PlayerScript enemy_script;
+	Rigidbody rb;
 	// Use this for initialization
 	void Start () {
-		hit = false;
+		rb = GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
@@ -14,7 +16,22 @@ public class Lazor : MonoBehaviour {
 		
 	}
 
-	void OnCollsionEnter(){
-		Destroy(this);
+	void OnTriggerEnter(Collider other){
+		Debug.Log("???");
+		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
+			if(other.name[6] == (char)(player_owner + '0')){
+				return;
+			}
+			enemy_script = other.GetComponent<PlayerScript>();
+			Debug.Log("Hit enemy");
+			enemy_script.HP--;
+			//Apply Knockback
+			other.GetComponent<Rigidbody>().AddForce(rb.velocity * 100 + Vector3.up*300f);
+			Destroy(this.gameObject);
+		}
+		if(other.name == "Lazor_Prefab(Clone)"){
+			//delete other projectile
+		}
+		
 	}
 }
