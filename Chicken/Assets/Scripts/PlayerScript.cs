@@ -17,6 +17,7 @@ public class PlayerScript : MonoBehaviour {
 	public bool b_disabled;
 	public bool x_disabled;
 	public bool y_disabled;
+	int direction;
 	Rigidbody rb;
 	GameObject hb;
 	public Lazor projectile;
@@ -38,6 +39,7 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = true;
         feet = gameObject.GetComponentInChildren(typeof(BoxCollider)) as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
+        direction = 1;
 	}
 	
 	// Update is called once per frame
@@ -77,11 +79,11 @@ public class PlayerScript : MonoBehaviour {
 					//Nothing
 					break;
 				case 2:
-					rb.velocity = new Vector3(50f, 0, 0);
+					rb.velocity = new Vector3(50f, 0, 0) * direction;;
 					if(attacking == false) rb.velocity = new Vector3(0,0,0);
 					break;
 				case 3:
-					hb.transform.Rotate(-Vector3.forward * 90 * Time.deltaTime / length[3]);
+					hb.transform.Rotate(-Vector3.forward * 90 * Time.deltaTime / length[3] * direction);
 					break;
 			}	
 		}
@@ -95,13 +97,19 @@ public class PlayerScript : MonoBehaviour {
 			var x = Input.GetAxis("LeftX") * Time.deltaTime * 10f;
 			var y = -Input.GetAxis("LeftY");
 			transform.Translate(x, 0, 0);
+			if(x > 0){
+				direction = 1;
+			}
+			if(x < 0){
+				direction = -1;
+			}
 
-			if(y > 0 && jumps > 0 && !noJumping)
+			if(y > .9 && jumps > 0 && !noJumping)
 	        {
 	            StartCoroutine("Jump");
 	            noJumping = true;
 			}
-	        if (y < 0)
+	        if (y < -.9)
 	        {
 	            StartCoroutine("Fall");
 	        }
@@ -144,7 +152,7 @@ public class PlayerScript : MonoBehaviour {
 		cool_time = 0.0f;
 		Debug.Log("A attack used");
 		Quick hitbox = (Quick)Instantiate(hitbox_quick, transform.position, Quaternion.identity);
-		hitbox.transform.position += new Vector3(1f, 0, 0);
+		hitbox.transform.position += new Vector3(1f, 0, 0) * direction;
 		hitbox.transform.parent = transform;
 		Destroy(hitbox.gameObject, length[0]);
 	}
@@ -153,7 +161,7 @@ public class PlayerScript : MonoBehaviour {
 		cool_time = 0.0f;
 		Debug.Log("B attack used");
 		Lazor proj = (Lazor)Instantiate(projectile, transform.position, Quaternion.identity);
-		proj.GetComponent<Rigidbody>().AddForce(500f, 0, 0);
+		proj.GetComponent<Rigidbody>().AddForce(500f * direction, 0, 0);
 		Destroy(proj.gameObject, 5);
 	}
 	void X_Attack(){
@@ -170,11 +178,11 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("Y attack used");
-		Swipe hitbox = (Swipe)Instantiate(hitbox_arc, transform.position, Quaternion.Euler(0,0,45));
+		Swipe hitbox = (Swipe)Instantiate(hitbox_arc, transform.position, Quaternion.Euler(0,0, 45 + (-(direction - 1) * 45)));
 		hitbox.transform.parent = transform;
 		attacking = true;
 		hb = hitbox.gameObject;
-		Destroy(hitbox.gameObject, length[3]);
+		Destroy(hitbox.gameObject, length[3] + .05f);
 		attack_counter = 0.0f;
 	}
 
