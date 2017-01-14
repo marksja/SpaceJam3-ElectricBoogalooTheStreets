@@ -2,6 +2,10 @@
 using System.Collections;
 
 public class PlayerScript : MonoBehaviour {
+    //stats
+    int HP = 3;
+    int SCORE = 0;
+
 	int last_used;
 	float cool_time;
 	public bool currently_charging;
@@ -28,25 +32,43 @@ public class PlayerScript : MonoBehaviour {
     bool falling = false;
     bool grounded = false;
     bool noJumping = false;
+    bool inDropThrough = false;
     BoxCollider feet;
     int jumps = 2;
-
-	private IEnumerator coroutine;
+    
 
 	// Use this for initialization
-	void Start () {
-		rb = GetComponent<Rigidbody>();
+	void Start ()
+    {
+        rb = GetComponent<Rigidbody>();
 		can_attack = true;
-        feet = gameObject.GetComponentInChildren(typeof(BoxCollider)) as BoxCollider;
+        feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
         direction = 1;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		//Check if attack charge is done
-		if(currently_charging){
-			charge_time += Time.deltaTime;
+        //Read Input
+        var x = Input.GetAxis("LeftX") * Time.deltaTime * 10f;
+        var y = -Input.GetAxis("LeftY");
+        if (grounded)
+            jumps = 2;
+        //Check if attack charge is done
+        if (currently_charging){
+            
+            if (falling && rb.velocity.y == 0)
+            {
+                grounded = true;
+                falling = false;
+            }
+            if (rb.velocity.y > 0)
+                feet.enabled = false;
+            else
+                feet.enabled = true;
+
+
+            charge_time += Time.deltaTime;
 			if(charge_time > charging[last_used]){
 				currently_charging = false;
 				can_attack = true;
@@ -69,7 +91,18 @@ public class PlayerScript : MonoBehaviour {
 		}
 
 		else if(attacking){
-			attack_counter += Time.deltaTime;
+            if (falling && rb.velocity.y == 0)
+            {
+                grounded = true;
+                falling = false;
+            }
+            if (rb.velocity.y > 0)
+                feet.enabled = false;
+            else
+                feet.enabled = true;
+
+
+            attack_counter += Time.deltaTime;
 			if(attack_counter > length[last_used]) attacking = false;
 			switch (last_used){
 				case 0:
@@ -93,14 +126,13 @@ public class PlayerScript : MonoBehaviour {
 			cool_time += Time.deltaTime;
 			if(cool_time > cooldown[last_used]) can_attack = true;
 			
-			//Movement
-			var x = Input.GetAxis("LeftX") * Time.deltaTime * 10f;
-			var y = -Input.GetAxis("LeftY");
+            //Move
 			transform.Translate(x, 0, 0);
-			if(x > 0){
+
+			if(x > 0 && grounded){
 				direction = 1;
 			}
-			if(x < 0){
+			if(x < 0 && grounded){
 				direction = -1;
 			}
 
@@ -109,7 +141,8 @@ public class PlayerScript : MonoBehaviour {
 	            StartCoroutine("Jump");
 	            noJumping = true;
 			}
-	        if (y < -.9)
+
+	        if (y < -.9 && !inDropThrough)
 	        {
 	            StartCoroutine("Fall");
 	        }
@@ -120,6 +153,10 @@ public class PlayerScript : MonoBehaviour {
 	            grounded = true;
 	            falling = false;
 			}
+            if (rb.velocity.y > 0)
+                feet.enabled = false;
+            else     
+                feet.enabled = true;
 
 			//Attacks
 			if(can_attack){
@@ -144,7 +181,7 @@ public class PlayerScript : MonoBehaviour {
 	}
 
 	void OnCollisionEnter() {
-		can_jump = true;
+//		can_jump = true;
 	}
 
 	void A_Attack(){
@@ -188,13 +225,15 @@ public class PlayerScript : MonoBehaviour {
 
     private IEnumerator Fall()
     {
+        inDropThrough = true;
         rb.AddForce(0, -10f, 0);
-        feet.isTrigger = true;
+        feet.gameObject.layer = 0;
         Debug.Log("Falling through platform");
         falling = true;
         yield return new WaitForSeconds(0.5f);
-        feet.isTrigger = false;
+        feet.gameObject.layer = 8;
         Debug.Log("Fall complete");
+        inDropThrough = false;
 	}
 
     private IEnumerator Jump()
@@ -202,10 +241,7 @@ public class PlayerScript : MonoBehaviour {
         jumps -= 1;
         rb.velocity = new Vector3(rb.velocity.x, 8f);
         Debug.Log("Jumping");
-        falling = false;
-        while (!grounded)
-            yield return null;
-        jumps = Mathf.Max(2, jumps + 1);
+        yield return null;
         Debug.Log("Jump Complete");
     }
 }
