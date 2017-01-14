@@ -264,6 +264,23 @@ public class PlayerScript : MonoBehaviour {
         Debug.Log("Jumping");
         yield return null;
     }
+    /*
+    public string RestrictButtons()
+    {
+        string btns = "";
+        while (btns.Length < 2)
+        {
+            if (Input.GetButtonDown(A))
+                btns += 'a';
+            else if (Input.GetButtonDown(B))
+                btns += 'b';
+            else if (Input.GetButtonDown(X))
+                btns += 'x';
+            else if (Input.GetButtonDown(Y))
+                btns += 'y';
+        }
+        return btns;
+    }*/
 }
  
 /*=======

@@ -15,8 +15,7 @@ public class GameScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        for (int i = 0; i < rounds.Length; ++i)
-            rounds[i] = new Round();
+
 	}
 	
 	// Update is called once per frame
