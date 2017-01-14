@@ -153,7 +153,16 @@ public class PlayerScript : MonoBehaviour {
 	        {
 	            StartCoroutine("Fall");
 	        }
-	        if (noJumping && y <= 0)
+            if (rb.velocity.y < 0)
+            {
+                falling = true;
+                grounded = false;
+            }
+            else if (rb.velocity.y > 0)
+            {
+                falling = false;
+            }
+            if (noJumping && y <= 0)
 	            noJumping = false;
 	        if (falling && rb.velocity.y == 0)
 	        {
@@ -164,6 +173,8 @@ public class PlayerScript : MonoBehaviour {
                 feet.enabled = false;
             else     
                 feet.enabled = true;
+            if (!grounded && jumps == 2)
+                jumps = 1;
 
 			//Attacks
 			if(can_attack){
@@ -232,6 +243,8 @@ public class PlayerScript : MonoBehaviour {
 
     private IEnumerator Fall()
     {
+        grounded = false;
+        jumps -= 1;
         inDropThrough = true;
         rb.AddForce(0, -10f, 0);
         feet.gameObject.layer = 0;
@@ -245,11 +258,11 @@ public class PlayerScript : MonoBehaviour {
 
     private IEnumerator Jump()
     {
+        grounded = false;
         jumps -= 1;
         rb.velocity = new Vector3(rb.velocity.x, 8f);
         Debug.Log("Jumping");
         yield return null;
-        Debug.Log("Jump Complete");
     }
 }
  
