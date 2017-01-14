@@ -19,9 +19,10 @@ public class PlayerScript : MonoBehaviour {
 	public bool y_disabled;
 	Rigidbody rb;
 	public Lazor projectile;
-	//public Quick hitbox_quick;
-	//public Med hitbox_arc;
+	public Quick hitbox_quick;
+	public Swipe hitbox_arc;
 	public Dash hitbox_dash;
+
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody>();
@@ -53,6 +54,7 @@ public class PlayerScript : MonoBehaviour {
 				charge_time = 0.0f;
 			}
 		}
+
 		else if(attacking){
 			attack_counter += Time.deltaTime;
 			if(attack_counter > length[last_used]) attacking = false;
@@ -72,6 +74,7 @@ public class PlayerScript : MonoBehaviour {
 					break;
 			}	
 		}
+
 		else{
 			//Update can_attack
 			cool_time += Time.deltaTime;
@@ -117,7 +120,10 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("A attack used");
-		attacking = true;
+		Quick hitbox = (Quick)Instantiate(hitbox_quick, transform.position, Quaternion.identity);
+		hitbox.transform.position += new Vector3(1f, 0, 0);
+		hitbox.transform.parent = transform;
+		Destroy(hitbox.gameObject, length[0]);
 	}
 	void B_Attack(){
 		can_attack = false;
@@ -125,7 +131,7 @@ public class PlayerScript : MonoBehaviour {
 		Debug.Log("B attack used");
 		Lazor proj = (Lazor)Instantiate(projectile, transform.position, Quaternion.identity);
 		proj.GetComponent<Rigidbody>().AddForce(500f, 0, 0);
-		Destroy(proj, 5);
+		Destroy(proj.gameObject, 5);
 	}
 	void X_Attack(){
 		can_attack = false;
@@ -134,7 +140,7 @@ public class PlayerScript : MonoBehaviour {
 		attacking = true;
 		Dash hitbox = (Dash)Instantiate(hitbox_dash, transform.position, Quaternion.identity);
 		hitbox.transform.parent = transform;
-		Destroy(hitbox, length[2]);
+		Destroy(hitbox.gameObject, length[2]);
 		attack_counter = 0.0f;
 	}
 	void Y_Attack(){
@@ -142,5 +148,22 @@ public class PlayerScript : MonoBehaviour {
 		cool_time = 0.0f;
 		Debug.Log("Y attack used");
 		attacking = true;
+		Swipe hitbox = (Swipe)Instantiate(hitbox_arc, transform.position, Quaternion.Euler(0,0,90));
+		hitbox.transform.position += new Vector3(0, 1.5f, 0);
+		hitbox.transform.parent = transform;
+		Slash(hitbox.gameObject);
+		Destroy(hitbox.gameObject, length[3]);
+		attack_counter = 0.0f;
+	}
+
+	IEnumerator Slash(GameObject hitbox){
+		float time = 0.0f;
+		while(time < length[3]){
+	        Quaternion target = Quaternion.Euler(0, 0, -90);
+	        hitbox.transform.rotation = Quaternion.Slerp(hitbox.transform.rotation, target, Time.deltaTime * .03f);			
+	        time += Time.deltaTime;
+		}
+		return null;
 	}
 }
+ 
