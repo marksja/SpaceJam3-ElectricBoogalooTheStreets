@@ -18,10 +18,13 @@ public class PlayerScript : MonoBehaviour {
 	public bool x_disabled;
 	public bool y_disabled;
 	Rigidbody rb;
+	GameObject hb;
 	public Lazor projectile;
 	public Quick hitbox_quick;
 	public Swipe hitbox_arc;
 	public Dash hitbox_dash;
+
+	private IEnumerator coroutine;
 
 	// Use this for initialization
 	void Start () {
@@ -70,7 +73,7 @@ public class PlayerScript : MonoBehaviour {
 					if(attacking == false) rb.velocity = new Vector3(0,0,0);
 					break;
 				case 3:
-					//Do a thing for slash
+					hb.transform.Rotate(-Vector3.forward * 90 * Time.deltaTime / length[3]);
 					break;
 			}	
 		}
@@ -147,23 +150,12 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("Y attack used");
-		attacking = true;
-		Swipe hitbox = (Swipe)Instantiate(hitbox_arc, transform.position, Quaternion.Euler(0,0,90));
-		hitbox.transform.position += new Vector3(0, 1.5f, 0);
+		Swipe hitbox = (Swipe)Instantiate(hitbox_arc, transform.position, Quaternion.Euler(0,0,45));
 		hitbox.transform.parent = transform;
-		Slash(hitbox.gameObject);
+		attacking = true;
+		hb = hitbox.gameObject;
 		Destroy(hitbox.gameObject, length[3]);
 		attack_counter = 0.0f;
-	}
-
-	IEnumerator Slash(GameObject hitbox){
-		float time = 0.0f;
-		while(time < length[3]){
-	        Quaternion target = Quaternion.Euler(0, 0, -90);
-	        hitbox.transform.rotation = Quaternion.Slerp(hitbox.transform.rotation, target, Time.deltaTime * .03f);			
-	        time += Time.deltaTime;
-		}
-		return null;
 	}
 }
  
