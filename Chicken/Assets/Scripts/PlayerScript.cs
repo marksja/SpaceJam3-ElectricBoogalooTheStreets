@@ -25,8 +25,6 @@ public class PlayerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody>();
-		x_disabled = true;
-		a_disabled = true;
 		can_attack = true;
 	}
 	
@@ -56,6 +54,8 @@ public class PlayerScript : MonoBehaviour {
 			}
 		}
 		else if(attacking){
+			attack_counter += Time.deltaTime;
+			if(attack_counter > length[last_used]) attacking = false;
 			switch (last_used){
 				case 0:
 					//do a thing for quick attack
@@ -65,13 +65,12 @@ public class PlayerScript : MonoBehaviour {
 					break;
 				case 2:
 					rb.velocity = new Vector3(50f, 0, 0);
+					if(attacking == false) rb.velocity = new Vector3(0,0,0);
 					break;
 				case 3:
 					//Do a thing for slash
 					break;
-			}
-			attack_counter += Time.deltaTime;
-			if(attack_counter > length[last_used]) attacking = false;
+			}	
 		}
 		else{
 			//Update can_attack
@@ -118,6 +117,7 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("A attack used");
+		attacking = true;
 	}
 	void B_Attack(){
 		can_attack = false;
@@ -131,13 +131,16 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("X attack used");
+		attacking = true;
 		Dash hitbox = (Dash)Instantiate(hitbox_dash, transform.position, Quaternion.identity);
 		hitbox.transform.parent = transform;
-
+		Destroy(hitbox, length[2]);
+		attack_counter = 0.0f;
 	}
 	void Y_Attack(){
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("Y attack used");
+		attacking = true;
 	}
 }
