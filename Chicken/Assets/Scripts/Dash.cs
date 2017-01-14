@@ -23,7 +23,9 @@ public class Dash : MonoBehaviour {
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
 			Debug.Log("Hit enemy");
-			enemy_script.HP--;
+			if(enemy_script.damageable){
+				enemy_script.HP--;
+			}
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(0, 520, 0));
 			Destroy(this.gameObject);
 			//Apply Knockback

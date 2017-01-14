@@ -24,7 +24,9 @@ public class Quick : MonoBehaviour {
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
 			Debug.Log("Hit enemy");
-			enemy_script.HP--;
+			if(enemy_script.damageable){
+				enemy_script.HP--;
+			}
 			//Destroy(this.gameObject);
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(600 * direction, 520, 0) );

@@ -24,7 +24,9 @@ public class Lazor : MonoBehaviour {
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
 			Debug.Log("Hit enemy");
-			enemy_script.HP--;
+			if(enemy_script.damageable){
+				enemy_script.HP--;
+			}
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(rb.velocity * 100 + Vector3.up*300f);
 			Destroy(this.gameObject);

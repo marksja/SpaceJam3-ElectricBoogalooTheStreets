@@ -22,6 +22,8 @@ public class PlayerScript : MonoBehaviour {
 	public bool b_disabled;
 	public bool x_disabled;
 	public bool y_disabled;
+	public bool moveable;
+	public bool damageable;
 	int direction;
 	Rigidbody rb;
 	GameObject hb;
@@ -47,6 +49,8 @@ public class PlayerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
+    	moveable = true;
+    	damageable = false;
         rb = GetComponent<Rigidbody>();
 		can_attack = true;
         feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
@@ -63,7 +67,6 @@ public class PlayerScript : MonoBehaviour {
             jumps = 2;
         //Check if attack charge is done
         if (currently_charging){
-            
             if (falling && rb.velocity.y == 0)
             {
                 grounded = true;
@@ -84,6 +87,7 @@ public class PlayerScript : MonoBehaviour {
 						A_Attack();
 						break;
 					case 1:
+						moveable = false;
 						B_Attack();
 						break;
 					case 2:
@@ -119,8 +123,12 @@ public class PlayerScript : MonoBehaviour {
 					//Nothing
 					break;
 				case 2:
+					moveable = false;
 					rb.velocity = new Vector3(50f, 0, 0) * direction;;
-					if(attacking == false) rb.velocity = new Vector3(0,0,0);
+					if(attacking == false) {
+						rb.velocity = new Vector3(0,0,0);
+						moveable = true;
+					}
 					break;
 				case 3:
 					hb.transform.Rotate(-Vector3.forward * 90 * Time.deltaTime / length[3] * direction);
@@ -128,7 +136,7 @@ public class PlayerScript : MonoBehaviour {
 			}	
 		}
 
-		else{
+		if(moveable){
 			//Update can_attack
 			cool_time += Time.deltaTime;
 			if(cool_time > cooldown[last_used]) can_attack = true;
@@ -214,6 +222,7 @@ public class PlayerScript : MonoBehaviour {
 		Destroy(hitbox.gameObject, length[0]);
 	}
 	void B_Attack(){
+		moveable = true;
 		can_attack = false;
 		cool_time = 0.0f;
 		Debug.Log("B attack used");

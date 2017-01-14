@@ -24,7 +24,9 @@ public class Swipe : MonoBehaviour {
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
 			Debug.Log("Hit enemy");
-			enemy_script.HP--;
+			if(enemy_script.damageable){
+				enemy_script.HP--;
+			}
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(direction*Mathf.Cos(transform.eulerAngles.x) * 1000, direction*Mathf.Sin(transform.eulerAngles.y) * 1000));
 		}
