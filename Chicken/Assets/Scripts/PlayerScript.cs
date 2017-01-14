@@ -47,7 +47,7 @@ public class PlayerScript : MonoBehaviour {
     public string LeftY;
 
 	// Use this for initialization
-	void Start ()
+	void Start()
     {
     	moveable = true;
     	damageable = false;

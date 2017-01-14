@@ -17,28 +17,30 @@ public class Round : MonoBehaviour {
     public int currentRound;
     public int currentPhase;
 
-//    Transform gameTransform;
+    //    Transform gameTransform;
+    public GameObject gameO;
+    public GameScript game;
     public GameObject Player1;
     public GameObject Player2;
     public PlayerScript P1S;
     public PlayerScript P2S;
 
     // Use this for initialization
-    void Start (int pos_in, int res_in, int fight_in) {
-        POSLIMIT = pos_in;
-        RESLIMIT = res_in;
-        FIGHTLIMIT = fight_in;
+    void Start () {
+
+        POSLIMIT = 10000;
+        RESLIMIT = 10000;
+        FIGHTLIMIT = 10000;
 
         currentPhase = 0;
         timeRemaining = POSLIMIT;
-        //        gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
-        P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
-        P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
     }
 
     // Update is called once per frame
     void FixedUpdate () {
+        if (currentRound != game.currentRound)
+            return;
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
@@ -66,7 +68,6 @@ public class Round : MonoBehaviour {
             case 1:
                 {
                     StartCoroutine(RestrictButtons());
-
                     break;
                 }
             case 2:
