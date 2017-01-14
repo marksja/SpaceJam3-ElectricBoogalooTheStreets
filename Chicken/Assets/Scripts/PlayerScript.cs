@@ -36,6 +36,12 @@ public class PlayerScript : MonoBehaviour {
     BoxCollider feet;
     int jumps = 2;
     
+    public string A;
+    public string B;
+    public string X;
+    public string Y;
+    public string LeftX;
+    public string LeftY;
 
 	// Use this for initialization
 	void Start ()
@@ -50,8 +56,8 @@ public class PlayerScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //Read Input
-        var x = Input.GetAxis("LeftX") * Time.deltaTime * 10f;
-        var y = -Input.GetAxis("LeftY");
+        var x = Input.GetAxis(LeftX) * Time.deltaTime * 10f;
+        var y = -Input.GetAxis(LeftY);
         if (grounded)
             jumps = 2;
         //Check if attack charge is done
@@ -129,10 +135,10 @@ public class PlayerScript : MonoBehaviour {
             //Move
 			transform.Translate(x, 0, 0);
 
-			if(x > 0 && grounded){
+			if(x > 0){
 				direction = 1;
 			}
-			if(x < 0 && grounded){
+			if(x < 0){
 				direction = -1;
 			}
 
@@ -160,19 +166,19 @@ public class PlayerScript : MonoBehaviour {
 
 			//Attacks
 			if(can_attack){
-				if(Input.GetButtonDown("A") && !a_disabled){
+				if(Input.GetButtonDown(A) && !a_disabled){
 					last_used = 0;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown("B") && !b_disabled){
+				if(Input.GetButtonDown(B) && !b_disabled){
 					last_used = 1;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown("X") && !x_disabled){
+				if(Input.GetButtonDown(X) && !x_disabled){
 					last_used = 2;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown("Y") && !y_disabled){
+				if(Input.GetButtonDown(Y) && !y_disabled){
 					last_used = 3;
 					currently_charging = true;
 				}
