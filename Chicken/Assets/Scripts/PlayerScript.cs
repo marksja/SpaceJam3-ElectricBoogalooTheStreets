@@ -7,6 +7,14 @@ public class PlayerScript : MonoBehaviour {
     public int SCORE = 0;   //0-3
     public string PLAYERSTATE = "neutral";
 
+    public float maxSpeed;
+    public float acceleration;
+    public float airSpeed;
+    public float airAccel;
+
+    //Hype
+    public float Hype;
+
 	int last_used;
 	float cool_time;
 	public bool currently_charging;
@@ -36,11 +44,14 @@ public class PlayerScript : MonoBehaviour {
     public float x_tol;
     public UnityEngine.UI.Image healthBar;
     public Sprite[] barImages;
+    public float spawnPosX;
+    public float spawnPosY;
 
     bool falling = false;
     bool grounded = false;
     bool noJumping = false;
     bool inDropThrough = false;
+    bool dashing = false;
     BoxCollider feet;
     int jumps = 2;
     
@@ -78,8 +89,6 @@ public class PlayerScript : MonoBehaviour {
         //Read Input
         float x = Input.GetAxis(LeftX) * Time.deltaTime * 5f;
 
-        if(!grounded) x *= .4f;
-
         float y = -Input.GetAxis(LeftY);
 
         //Set tolerance on x
@@ -87,8 +96,6 @@ public class PlayerScript : MonoBehaviour {
         {
             x = 0;
         }
-
-        
 
         // Set running if on the ground and unhurt
         if(x!=0)
@@ -126,7 +133,7 @@ public class PlayerScript : MonoBehaviour {
             jumps = 2;
         //Check if attack charge is done
         if (currently_charging){
-            if (falling && rb.velocity.y == 0)
+            if (falling && rb.velocity.y == 0 && !dashing)
             {
                 grounded = true;
                 falling = false;
@@ -144,24 +151,33 @@ public class PlayerScript : MonoBehaviour {
 				can_attack = true;
 				switch (last_used){
 					case 0:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
+                        anim.SetBool("Miding", true);
                         anim.SetBool("Shorting", true);
                         A_Attack();
                         
                         break;
 					case 1:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Charging", true);
                         moveable = false;
 						B_Attack();
-                        
+
 
                         break;
 					case 2:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Dashing", true);
                          X_Attack();
-                        
+
 
                          break;
 					case 3:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Miding", true);
                          Y_Attack();
                         
@@ -204,7 +220,7 @@ public class PlayerScript : MonoBehaviour {
 				case 3:
 					hb.transform.Rotate(-Vector3.forward * 90 * Time.deltaTime / length[3] * direction);
 					break;
-			}
+			}	
             // Stop the attack animations
             if(attacking == false)
             {
@@ -223,9 +239,24 @@ public class PlayerScript : MonoBehaviour {
 			if(cool_time > cooldown[last_used]) can_attack = true;
 			
             //Move
-			transform.Translate(x, 0, 0);
+            if (grounded)
+            {
+                float dv = 5 * x * acceleration;
+                float newVX = rb.velocity.x + dv;
+                if (Mathf.Abs(newVX) > maxSpeed)
+                    newVX = maxSpeed * (newVX/Mathf.Abs(newVX));
+                rb.velocity = new Vector3(newVX, rb.velocity.y, 0);
+            }
+            else
+            {
+                float dv = 5 * x * airAccel;
+                float newVX = rb.velocity.x + dv;
+                if (Mathf.Abs(newVX) > airSpeed)
+                    newVX = airSpeed * (newVX / Mathf.Abs(newVX));
+                rb.velocity = new Vector3(newVX, rb.velocity.y, 0);
+            }
 
-			if(x > 0){
+            if (x > 0){
 				direction = 1;
 			}
 			if(x < 0){
@@ -267,19 +298,31 @@ public class PlayerScript : MonoBehaviour {
 
 			//Attacks
 			if(can_attack){
-				if(Input.GetButtonDown(A) && !a_disabled){
+				if(Input.GetButtonDown(A)){
+					if(a_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 0;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown(B) && !b_disabled){
+				if(Input.GetButtonDown(B)){
+					if(b_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 1;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown(X) && !x_disabled){
+				if(Input.GetButtonDown(X)){
+					if(x_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 2;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown(Y) && !y_disabled){
+				if(Input.GetButtonDown(Y)){
+					if(y_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 3;
 					currently_charging = true;
 				}
@@ -295,25 +338,27 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
         attacking = true;
-        Debug.Log("A attack used");
+		Debug.Log("A attack used");
 		Quick hitbox = (Quick)Instantiate(hitbox_quick, transform.position, Quaternion.identity);
 		hitbox.transform.position += new Vector3(1f, 0, 0) * direction;
 		hitbox.GetComponent<Quick>().player_owner = name[6];
 		hitbox.GetComponent<Quick>().direction = direction;
 		hitbox.transform.parent = transform;
 		Destroy(hitbox.gameObject, length[0]);
+        StartCoroutine(ACoroutine());
         print("REEEEEEEEE");
 	}
 	void B_Attack(){
 		moveable = true;
 		can_attack = false;
         attacking = true;
-        cool_time = 0.0f;
+		cool_time = 0.0f;
 		Debug.Log("B attack used");
 		Lazor proj = (Lazor)Instantiate(projectile, transform.position + Vector3.right*1.5f*direction, Quaternion.identity);
 		proj.GetComponent<Rigidbody>().AddForce(500f * direction, 0, 0);
 		proj.GetComponent<Lazor>().player_owner = name[6];
 		Destroy(proj.gameObject, 5);
+        StartCoroutine(BCoroutine());
 	}
 	void X_Attack(){
 		can_attack = false;
@@ -325,6 +370,7 @@ public class PlayerScript : MonoBehaviour {
 		hitbox.GetComponent<Dash>().player_owner = name[6];
 		Destroy(hitbox.gameObject, length[2]);
 		attack_counter = 0.0f;
+		StartCoroutine(XCoroutine());
 	}
 	void Y_Attack(){
 		can_attack = false;
@@ -338,6 +384,7 @@ public class PlayerScript : MonoBehaviour {
 		hb = hitbox.gameObject;
 		Destroy(hitbox.gameObject, length[3] + .05f);
 		attack_counter = 0.0f;
+        StartCoroutine(YCoroutine());
 	}
 
     private IEnumerator Fall()
@@ -363,23 +410,41 @@ public class PlayerScript : MonoBehaviour {
         Debug.Log("Jumping");
         yield return null;
     }
-    /*
-    public string RestrictButtons()
+    
+    private IEnumerator ACoroutine()
     {
-        string btns = "";
-        while (btns.Length < 2)
+        moveable = false;
+        yield return new WaitForSeconds(.2f);
+        moveable = true;
+    }
+    private IEnumerator BCoroutine()
+    {
+        moveable = false;
+        yield return new WaitForSeconds(1f);
+        moveable = true;
+    }
+    private IEnumerator YCoroutine()
         {
-            if (Input.GetButtonDown(A))
-                btns += 'a';
-            else if (Input.GetButtonDown(B))
-                btns += 'b';
-            else if (Input.GetButtonDown(X))
-                btns += 'x';
-            else if (Input.GetButtonDown(Y))
-                btns += 'y';
+        moveable = false;
+        yield return new WaitForSeconds(1f);
+        moveable = true;
         }
-        return btns;
-    }*/
+
+
+    private IEnumerator XCoroutine()
+    {
+        moveable = false;
+        dashing = true;
+        yield return new WaitForSeconds(length[2]);
+        dashing = false;
+        moveable = true;
+    }
+
+    private IEnumerator Delayed_Damage(float time){
+    	yield return new WaitForSeconds(time);
+    	//take damage animation
+    	HP--;
+    }
 }
  
 /*=======

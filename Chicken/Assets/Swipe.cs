@@ -5,10 +5,11 @@ public class Swipe : MonoBehaviour {
 
 	public int player_owner;
 	PlayerScript enemy_script;
+	PlayerScript owner_script;
 	public int direction;
 	// Use this for initialization
 	void Start () {
-	
+		owner_script = GameObject.Find("Player"+player_owner).GetComponent<PlayerScript>();
 	}
 	
 	// Update is called once per frame
@@ -26,12 +27,19 @@ public class Swipe : MonoBehaviour {
 			Debug.Log("Hit enemy");
 			if(enemy_script.damageable){
 				enemy_script.HP--;
+				owner_script.Hype += 5;
 			}
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(direction*Mathf.Cos(transform.eulerAngles.x) * 1000, direction*Mathf.Sin(transform.eulerAngles.y) * 1000));
 		}
-		if(other.name == "Swipe_Prefab(Clone)"){
-			//delete other projectile
+		if(other.name.Contains("Swipe")){
+			Destroy(this.gameObject);
+			Destroy(other.gameObject);
+			owner_script.Hype += 4;
+		}
+		else if(other.name.Contains("Quick")){
+			Destroy(other.gameObject);
+			owner_script.Hype += 3;
 		}
 	}
 }

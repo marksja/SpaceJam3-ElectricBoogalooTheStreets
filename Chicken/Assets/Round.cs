@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Round : MonoBehaviour {
 
-    public int POSLIMIT = 10;
-    public int RESLIMIT = 10;
-    public int FIGHTLIMIT = 100;
+    public int POSLIMIT;
+    public int RESLIMIT;
+    public int FIGHTLIMIT;
 
     bool roundOver;
 
@@ -33,21 +33,35 @@ public class Round : MonoBehaviour {
     public UnityEngine.UI.Text roundLbl;
     public UnityEngine.UI.Text juicyPhaseName;
     public UnityEngine.UI.Text descriptivePhase;
+    public UnityEngine.UI.Image P1Score;
+    public UnityEngine.UI.Image P2Score;
+    public UnityEngine.UI.Image P1Buttons;
+    public UnityEngine.UI.Image P2Buttons;
+    public UnityEngine.UI.Image P1ButtonSel;
+    public UnityEngine.UI.Image P2ButtonSel;
+    public UnityEngine.UI.Image P1Pan;
+    public UnityEngine.UI.Image P2Pan;
+    public UnityEngine.UI.Image P1ResBar;
+    public UnityEngine.UI.Image P2ResBar;
+    public Sprite[] scoreBar;
+    public Sprite[] resBar;
     bool countdown = false;
+
+    //Hype Algoritm
+    float P1_Previous_Hype;
+    float P2_Previous_Hype;
+    float total_hype;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
-        round_num = 1;
-        POSLIMIT = 5;
-        RESLIMIT = 3;
-        FIGHTLIMIT = 100;
+        round_num = 0;
         currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
         Update_UI();
-        //gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
+        //gameTransform = GetComponeP2ResBar.enabled = false;ntInParent(typeof(Transform)) as Transform;
         //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
         //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
@@ -58,15 +72,32 @@ public class Round : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (currentPhase == 0)
+        {
+            P1Pan.enabled = false;
+            P2Pan.enabled = false;
+            P1ButtonSel.enabled = false;
+            P2ButtonSel.enabled = false;
+            P1ResBar.enabled = false;
+            P2ResBar.enabled = false;
+        }
+        if (currentPhase == 1)
+        {
+            P1S.moveable = false;
+            P1S.moveable = false;
+        }
         if (!countdown)
             timer.text = timeRemaining.ToString("0.00");
+        if (round_num != 0)
             roundLbl.text = "Round " + currentRound.ToString();
+        else
+            roundLbl.text = "Round 1";
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
             {
                 juicyPhaseName.text = "RESTRICT!";
-                descriptivePhase.text = "choose 2 attacks that your foe may not use";
+                descriptivePhase.text = "choose 2 attacks that your foe may not use.";
                 currentPhase = 1;
                 P1S.moveable = false;
                 P2S.moveable = false;
@@ -122,6 +153,7 @@ public class Round : MonoBehaviour {
                 }
             case 1:
                 {
+                    StartCoroutine(RestrictButtons());
                     if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
                         P2_res += "A";
                     if (Input.GetButton(P1S.B) && P2_res.Length < 2 && !P2_res.Contains("B"))
@@ -139,6 +171,8 @@ public class Round : MonoBehaviour {
                         P1_res += "X";
                     if (Input.GetButton(P2S.Y) && P1_res.Length < 2 && !P1_res.Contains("Y"))
                         P1_res += "Y";
+                    P1ResBar.sprite = resBar[P2_res.Length];
+                    P2ResBar.sprite = resBar[P1_res.Length];
                     break;
                 }
             case 2:
@@ -173,7 +207,7 @@ public class Round : MonoBehaviour {
             currentPhase = 0;
             Update_UI();
         }
-
+        total_hype += Get_Hype_Differential();
     }
 
     void Update_UI(){
@@ -189,10 +223,15 @@ public class Round : MonoBehaviour {
         }
         if(winner == 1){
             P1_wins++;
+            P1S.SCORE++;
+            P1Score.sprite = scoreBar[P1S.SCORE];
         }
         if(winner == 2){
             P2_wins++;
+            P2S.SCORE++;
+            P2Score.sprite = scoreBar[P2S.SCORE];
         }
+        juicyPhaseName.fontSize -= 40;
         currentRound++;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
@@ -203,56 +242,49 @@ public class Round : MonoBehaviour {
         P2S.HP = 3;
     }
 
+    float Get_Hype_Differential(){
+        if(P1S.Hype == P1_Previous_Hype) return 0.0f;
+        if(P2S.Hype == P2_Previous_Hype) return 0.0f;
+        float time_hype = 500f*(20f/timeRemaining);
+        float close_game_hype = 500f*(round_num)/(Mathf.Abs(P1_wins - P2_wins) + 1);
+        float p1_underdog_hype = (P1S.HP - P1S.HP) * (P2_wins - P1_wins) * 500f;
+        float p2_underdog_hype = (P2S.HP - P2S.HP) * (P1_wins - P2_wins) * 500f;
+        float P1_hype_diff = P2S.Hype - P1_Previous_Hype;
+        float P2_hype_diff = P1S.Hype - P2_Previous_Hype;
+
+        P1_hype_diff *= time_hype + close_game_hype + p1_underdog_hype;
+        P2_hype_diff *= time_hype + close_game_hype + p1_underdog_hype;
+
+        if(P1_hype_diff < 0) P1_hype_diff = 0;
+        if(P2_hype_diff < 0) P2_hype_diff = 0;
+
+        return P1_hype_diff + P2_hype_diff;
+    }
+
     private IEnumerator RestrictButtons()
     {
         //button restriction screen
         //show button screen
+        P1Pan.enabled = true;
+        P2Pan.enabled = true;
+        P1ButtonSel.enabled = true;
+        P2ButtonSel.enabled = true;
+        P1ResBar.enabled = true;
+        P2ResBar.enabled = true;
+        yield return new WaitForSeconds(RESLIMIT);
+        P1Pan.enabled = false;
+        P2Pan.enabled = false;
+        P1ButtonSel.enabled = false;
+        P2ButtonSel.enabled = false;
+        P1ResBar.enabled = false;
+        P2ResBar.enabled = false;
 
-        //Await button presses
-        while (P2_res.Length < 2 && P1_res.Length < 2)
-        {
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
-                P2_res += P1S.A;
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("B"))
-                P2_res += P1S.B;
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("X"))
-                P2_res += P1S.X;
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("Y"))
-                P2_res += P1S.Y;
-            
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("A"))
-                P1_res += P1S.A;
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("B"))
-                P1_res += P1S.A;
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("X"))
-                P1_res += P1S.A;
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("Y"))
-                P1_res += P1S.A;
-        }
-        if (P1_res.Contains("A"))
-            P1S.a_disabled = true;
-        if (P1_res.Contains("B"))
-            P1S.b_disabled = true;
-        if (P1_res.Contains("X"))
-            P1S.x_disabled = true;
-        if (P1_res.Contains("Y"))
-            P1S.y_disabled = true;
-
-        if (P2_res.Contains("A"))
-            P2S.a_disabled = true;
-        if (P2_res.Contains("B"))
-            P2S.b_disabled = true;
-        if (P2_res.Contains("X"))
-            P2S.x_disabled = true;
-        if (P2_res.Contains("Y"))
-            P2S.y_disabled = true;
-
-        return null;
     }
     
     private IEnumerator startFight()
     {
         countdown = true;
+        descriptivePhase.text = "";
         timer.text = FIGHTLIMIT.ToString("0.00");
         juicyPhaseName.fontSize += 10;
         juicyPhaseName.text = "3";
@@ -266,9 +298,9 @@ public class Round : MonoBehaviour {
         countdown = false;
         juicyPhaseName.fontSize += 10;
         juicyPhaseName.text = "FIGHT!";
-        descriptivePhase.text = "";
         timeRemaining = FIGHTLIMIT;
         timer.text = timeRemaining.ToString("0.00");
+        Debug.Log("movable");
         P1S.moveable = true;
         P2S.moveable = true;
         yield return new WaitForSeconds(1.5f);

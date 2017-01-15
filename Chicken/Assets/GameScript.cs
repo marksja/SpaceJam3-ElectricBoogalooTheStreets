@@ -7,7 +7,6 @@ public class GameScript : MonoBehaviour {
     public int HYPETIER;    //0 - 7
     public int HYPEPERCENT;
     const float baseSpeedMult = .8f;
-    public Round[] rounds;
 
     public int currentRound = 0;
 
