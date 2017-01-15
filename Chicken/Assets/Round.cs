@@ -285,6 +285,7 @@ public class Round : MonoBehaviour {
     private IEnumerator startFight()
     {
         countdown = true;
+        descriptivePhase.text = "";
         timer.text = FIGHTLIMIT.ToString("0.00");
         juicyPhaseName.fontSize += 10;
         juicyPhaseName.text = "3";
@@ -298,7 +299,6 @@ public class Round : MonoBehaviour {
         countdown = false;
         juicyPhaseName.fontSize += 10;
         juicyPhaseName.text = "FIGHT!";
-        descriptivePhase.text = "";
         timeRemaining = FIGHTLIMIT;
         timer.text = timeRemaining.ToString("0.00");
         Debug.Log("movable");
