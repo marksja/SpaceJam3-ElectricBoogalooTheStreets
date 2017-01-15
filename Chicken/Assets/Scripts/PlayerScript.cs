@@ -33,6 +33,7 @@ public class PlayerScript : MonoBehaviour {
 	public Swipe hitbox_arc;
 	public Dash hitbox_dash;
     public UnityEngine.UI.Image healthBar;
+    public Sprite[] barImages;
 
     bool falling = false;
     bool grounded = false;
@@ -66,6 +67,9 @@ public class PlayerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //update health bar
+        healthBar.sprite = barImages[HP];
+
         //anim = GetComponentInChildren<Animator>();
         //Read Input
         var x = Input.GetAxis(LeftX) * Time.deltaTime * 10f;
