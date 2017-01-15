@@ -29,6 +29,7 @@ public class Round : MonoBehaviour {
     public PlayerScript P2S;
     public Canvas UI;
     public UnityEngine.UI.Text timer;
+    public UnityEngine.UI.Text round;
 
     // Use this for initialization
     void Start () {
@@ -51,7 +52,7 @@ public class Round : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         timer.text = timeRemaining.ToString("0.00");
-
+        round.text = "Round " + currentRound.ToString();
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
