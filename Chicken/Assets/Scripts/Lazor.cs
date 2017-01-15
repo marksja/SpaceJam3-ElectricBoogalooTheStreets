@@ -35,13 +35,13 @@ public class Lazor : MonoBehaviour {
 			Destroy(this.gameObject);
 		}
 		if(other.name.Contains("Lazor")){
-			owner_script += 4;
+			owner_script.Hype += 4;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
 
 		}
 		else if(other.name.Contains("Dash") || other.name.Contains("Quick") || other.name.Contains("Swipe")){
-			owner_script += 3;
+			owner_script.Hype += 3;
 			Destroy(other.gameObject);
 		}
 		
