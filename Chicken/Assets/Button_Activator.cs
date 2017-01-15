@@ -16,7 +16,7 @@ public class Button_Activator : MonoBehaviour {
 		
 	}
 
-	void OnTriggerEnter(Collider other){
+	void OnCollisionEnter(Collider other){
 		if(!other.name.Contains("Player")){
 			SceneManager.LoadScene(link);
 		}

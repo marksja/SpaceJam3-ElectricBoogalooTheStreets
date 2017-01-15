@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Round : MonoBehaviour {
+
+    List<Frame> Hype_follower;
 
     public int POSLIMIT;
     public int RESLIMIT;
@@ -14,8 +15,8 @@ public class Round : MonoBehaviour {
     public int round_num;
     public int P1_wins;
     public int P2_wins;
-    public string P2_res = "";
-    public string P1_res = "";
+    public string P2_res;
+    public string P1_res;
     public float speedMult;
     public float timeRemaining;
     public int currentRound;
@@ -44,30 +45,24 @@ public class Round : MonoBehaviour {
     public UnityEngine.UI.Image P2Pan;
     public UnityEngine.UI.Image P1ResBar;
     public UnityEngine.UI.Image P2ResBar;
-    public UnityEngine.UI.Image hypeBar;
     public Sprite[] scoreBar;
     public Sprite[] resBar;
-    public Sprite[] hypeFill;
     bool countdown = false;
-    public AudioSource deathSound;
 
     //Hype Algoritm
     float P1_Previous_Hype;
     float P2_Previous_Hype;
     public float total_hype;
-    public UnityEngine.UI.Text HYPELABEL;
-    public int maxHype = 10000000;
-    public int[] hypeTiers;
-    public int hypeTier;
+    int max_hype_start;
+    int index;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 0;
-        currentRound = 0;
+        currentRound = 1;
         currentPhase = 0;
-        total_hype = 0;
         timeRemaining = POSLIMIT;
         Update_UI();
         //gameTransform = GetComponeP2ResBar.enabled = false;ntInParent(typeof(Transform)) as Transform;
@@ -76,11 +71,14 @@ public class Round : MonoBehaviour {
 
         juicyPhaseName.text = "POSITION!";
         descriptivePhase.text = "Move to your starting position of choice.";
+
     }
 
     // Update is called once per frame
-    void Update ()
-    {
+    void Update () {
+        if (replay){
+            Set_Up_Frame(max_hype_start + index);
+        }
         if (currentPhase == 0)
         {
             P1Pan.enabled = false;
@@ -93,11 +91,11 @@ public class Round : MonoBehaviour {
         if (currentPhase == 1)
         {
             P1S.moveable = false;
-            P2S.moveable = false;
+            P1S.moveable = false;
         }
         if (!countdown)
             timer.text = timeRemaining.ToString("0.00");
-        if (currentRound != 0)
+        if (round_num != 0)
             roundLbl.text = "Round " + currentRound.ToString();
         else
             roundLbl.text = "Round 1";
@@ -107,8 +105,6 @@ public class Round : MonoBehaviour {
             {
                 juicyPhaseName.text = "RESTRICT!";
                 descriptivePhase.text = "choose 2 attacks that your foe may not use.";
-                P1_res = "";
-                P2_res = "";
                 currentPhase = 1;
                 P1S.moveable = false;
                 P2S.moveable = false;
@@ -133,13 +129,6 @@ public class Round : MonoBehaviour {
                 }
                 else{
                     //If player 2 has not selected 2 buttons
-                    if (P2_res.Length == 0)
-                        P2_res = "AB";
-                    else if (P2_res.Length == 1)
-                        if (P2_res[0] != 'A')
-                            P2_res += "A";
-                        else
-                            P2_res += "B";
                 }
                 if(P2_res.Length == 2){
                     if (P2_res.Contains("A"))
@@ -153,30 +142,13 @@ public class Round : MonoBehaviour {
                 }
                 else{
                     //If player 1 has not selected 2 buttons
-                    if (P2_res.Length == 0)
-                        P2_res = "AB";
-                    else if (P2_res.Length == 1)
-                        if (P2_res[0] != 'A')
-                            P2_res += "A";
-                        else
-                            P2_res += "B";
                 }
             }
             else if (currentPhase == 2)
             {
                 currentPhase = 3;       //game over
-                timeRemaining = 3.0f;
-            }
-            else if(currentPhase == 3)
-            {
-                timeRemaining = POSLIMIT;
-                juicyPhaseName.fontSize = 100;
-                juicyPhaseName.text = "POSITION!";
-                descriptivePhase.text = "Move to your starting position of choice.";
-                P1S.damageable = P2S.damageable = false;
-                P1S.a_disabled = P1S.b_disabled = P1S.x_disabled = P1S.y_disabled =
-                    P2S.a_disabled = P2S.b_disabled = P2S.x_disabled = P2S.y_disabled = false;
-                currentPhase = 0;
+
+                End_Round();
             }
         }
         timeRemaining -= Time.deltaTime;
@@ -212,15 +184,9 @@ public class Round : MonoBehaviour {
                 }
             case 2:
                 {
-                    if ((P2S.HP <= 0 && P1S.HP <= 0)|| timeRemaining <= 0)
-                    {
-                        P1S.moveable = false;
-                        P2S.moveable = false;
-                        End_Round(0);
-                    }
-                    if (P1S.HP <= 0){
+                   
+                    if(P1S.HP <= 0){
                         //Player 1 loses
-                        deathSound.Play();
                         Debug.Log("Player 1 Loses");
                         P1S.moveable = false;
                         P2S.moveable = false;
@@ -230,7 +196,6 @@ public class Round : MonoBehaviour {
                     }
                     if(P2S.HP <= 0){
                         //Player 2 loses
-                        deathSound.Play();
                         Debug.Log("Player 2 Loses");
                         P1S.moveable = false;
                         P2S.moveable = false;
@@ -250,20 +215,22 @@ public class Round : MonoBehaviour {
             Update_UI();
         }
         total_hype += Get_Hype_Differential();
-        total_hype = Mathf.Min(total_hype, maxHype);
-        HYPELABEL.text = total_hype.ToString("N");
-        if (total_hype > hypeTiers[hypeTier])
-        {
-            hypeTier++;
-            hypeBar.sprite = hypeFill[hypeTier];
-            speedMult = 1f + .01f * hypeTier;
-            P1S.speedMult = speedMult;
-            P2S.speedMult = speedMult;
-            P1S.drag += .01f;
-            P2S.drag += .01f;
+    }
 
+    void Fixed_Update(){
+        if(currentPhase == 3){
+            Frame temp = new Frame();
+            temp.hype = total_hype;
+            temp.p1_attack = P1S.last_used;
+            temp.p2_attack = P2S.last_used;
+            temp.p1_direction = P1S.direction;
+            temp.p2_direction = P2S.direction;
+            temp.p2_transform = Player2.transform.position;
+            temp.p1_transform = Player1.transform.position;
+            temp.p2_velocity = P2S.rb.velocity;
+            temp.p1_velocity = P1S.rb.velocity;
+            Hype_follower.Add(temp);
         }
-        
     }
 
     void Update_UI(){
@@ -274,57 +241,28 @@ public class Round : MonoBehaviour {
     }
 
     void End_Round(int winner = 0){
-        juicyPhaseName.fontSize = 100;
-        Debug.Log("Round Ended");
         if(winner == 0){
-            //DRAW
-            juicyPhaseName.text = "DRAW!";
-            P1_wins++;
-            P1S.SCORE++;
-            P2_wins++;
-            P2S.SCORE++;
-            P1Score.sprite = scoreBar[P1S.SCORE];
-            P2Score.sprite = scoreBar[P2S.SCORE];
+            //No one won the round. What do?
         }
         if(winner == 1){
-            juicyPhaseName.text = "Player 1 Wins!";
             P1_wins++;
             P1S.SCORE++;
             P1Score.sprite = scoreBar[P1S.SCORE];
         }
         if(winner == 2){
-            juicyPhaseName.text = "Player 2 Wins!";
             P2_wins++;
             P2S.SCORE++;
             P2Score.sprite = scoreBar[P2S.SCORE];
         }
+        juicyPhaseName.fontSize -= 40;
         currentRound++;
-        timeRemaining = 3.0f;
-    //    currentPhase = 0;
-    //    timeRemaining = POSLIMIT;
-    //    Update_UI();
+        currentPhase = 0;
+        timeRemaining = POSLIMIT;
+        Update_UI();
         P1S.moveable = true;
         P2S.moveable = true;
         P1S.HP = 3;
         P2S.HP = 3;
-        descriptivePhase.text = P1_wins + " - " + P2_wins;
-        Update_UI();
-        if (P1S.SCORE == 3)
-        {
-            timer.text = "";
-            juicyPhaseName.fontSize = 150;
-            juicyPhaseName.text = "Player 1 Wins!";
-            WaitForSeconds wait = new WaitForSeconds(5f);
-            SceneManager.LoadScene("Main_Menu");
-        }
-        else if (P2S.SCORE == 3)
-        {
-            timer.text = "";
-            juicyPhaseName.fontSize = 150;
-            juicyPhaseName.text = "Player 2 Wins!";
-            WaitForSeconds wait = new WaitForSeconds(5f);
-            SceneManager.LoadScene("Main_Menu");
-        }
     }
 
     float Get_Hype_Differential(){
@@ -345,8 +283,6 @@ public class Round : MonoBehaviour {
 
         if(P1_hype_diff < 0) P1_hype_diff = 0;
         if(P2_hype_diff < 0) P2_hype_diff = 0;
-
-
 
         return P1_hype_diff + P2_hype_diff;
     }
@@ -373,7 +309,6 @@ public class Round : MonoBehaviour {
     
     private IEnumerator startFight()
     {
-        timeRemaining = FIGHTLIMIT;
         countdown = true;
         descriptivePhase.text = "";
         timer.text = FIGHTLIMIT.ToString("0.00");
@@ -397,4 +332,39 @@ public class Round : MonoBehaviour {
         yield return new WaitForSeconds(1.5f);
         juicyPhaseName.text = "";
     }
+
+    int Find_Most_Hype(){
+        float max_hype_change = 0;
+        float temp;
+        int list_len = Hype_follower.Count;
+        for(int i = 300; i < list_len; ++i){
+            temp = Hype_follower[i].hype - Hype_follower[i-300].hype;
+            if(temp > max_hype_change){
+                max_hype_start = i;
+                max_hype_change = temp;
+            }
+        }
+        return max_hype_start;
+    }
+
+    void Set_Up_Frame(int frame_num){
+        
+    }
+}
+
+
+
+
+
+public class Frame{
+    public int p1_attack;
+    public int p2_attack;
+    public bool p1_direction;
+    public bool p2_direction;
+    public Vector3 p1_transform;
+    public Vector3 p2_transform;
+    public Vector3 p1_velocity;
+    public Vector3 p2_velocity;
+    public float hype;
+    //Other info, probably about other object in the frame
 }

@@ -11,7 +11,7 @@ public class PlayerScript : MonoBehaviour {
     public float acceleration;
     public float airSpeed;
     public float airAccel;
-
+    public float speedMult = 1f;
     //Hype
     public float Hype;
 
@@ -65,6 +65,7 @@ public class PlayerScript : MonoBehaviour {
     public string Y;
     public string LeftX;
     public string LeftY;
+    public float drag;
 
     public Animator anim;
     public GameObject child;
@@ -246,23 +247,24 @@ public class PlayerScript : MonoBehaviour {
 			//Update can_attack
 			cool_time += Time.deltaTime;
 			if(cool_time > cooldown[last_used]) can_attack = true;
-			
+
             //Move
+            float newVX = 1f;
             if (grounded)
             {
                 float dv = 5 * x * acceleration;
-                float newVX = rb.velocity.x + dv;
+                newVX = rb.velocity.x + dv;
                 if (Mathf.Abs(newVX) > maxSpeed)
                     newVX = maxSpeed * (newVX/Mathf.Abs(newVX));
-                rb.velocity = new Vector3(newVX, rb.velocity.y, 0);
+                rb.velocity = new Vector3(newVX * speedMult, rb.velocity.y, 0);
             }
             else
             {
                 float dv = 5 * x * airAccel;
-                float newVX = rb.velocity.x + dv;
+                newVX = rb.velocity.x + dv;
                 if (Mathf.Abs(newVX) > airSpeed)
                     newVX = airSpeed * (newVX / Mathf.Abs(newVX));
-                rb.velocity = new Vector3(newVX, rb.velocity.y, 0);
+                rb.velocity = new Vector3(newVX * speedMult, rb.velocity.y, 0);
             }
 
             if (x > 0){
