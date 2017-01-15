@@ -3,14 +3,22 @@ using System.Collections;
 
 public class Lazor : MonoBehaviour {
 
-	public int player_owner;
+	public char player_owner;
 	PlayerScript enemy_script;
 	PlayerScript owner_script;
-	Rigidbody rb;
+	Rigidbody rb;	
+	public GameObject x;
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody>();
-		owner_script = GameObject.Find("Player"+player_owner).GetComponent<PlayerScript>();
+		Debug.Log(player_owner);
+		string temp = "GAME/Player" + player_owner;
+		Debug.Log(temp);
+		x = GameObject.Find(temp);
+		if(x == null){
+			Debug.Log("Fuuuuuck");
+		}
+		owner_script = x.GetComponent<PlayerScript>();
 	}
 	
 	// Update is called once per frame
@@ -21,7 +29,7 @@ public class Lazor : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
-			if(other.name[6] == (char)(player_owner + '0')){
+			if(other.name[6] == player_owner){
 				return;
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
