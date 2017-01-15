@@ -24,10 +24,11 @@ public class Round : MonoBehaviour {
     public GameObject Player2;
     public PlayerScript P1S;
     public PlayerScript P2S;
-
+    public UnityEngine.UI.Text timer;
     // Use this for initialization
-    void Start () {
-
+    void Start ()
+    {
+        timer = gameO.GetComponentInChildren<Canvas>().GetComponentInChildren<UnityEngine.UI.Text>();
         POSLIMIT = 10000;
         RESLIMIT = 10000;
         FIGHTLIMIT = 10000;
@@ -39,8 +40,8 @@ public class Round : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate () {
-        if (currentRound != game.currentRound)
-            return;
+        timer.text = timeRemaining.ToString("0.00");
+
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
