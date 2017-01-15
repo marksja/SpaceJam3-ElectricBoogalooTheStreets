@@ -29,6 +29,7 @@ public class Round : MonoBehaviour {
     public PlayerScript P2S;
     public Canvas UI;
     public UnityEngine.UI.Text timer;
+    public UnityEngine.UI.Text round_label;
     public UnityEngine.UI.Text roundLbl;
     public UnityEngine.UI.Text juicyPhaseName;
     public UnityEngine.UI.Text descriptivePhase;
