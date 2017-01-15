@@ -41,11 +41,14 @@ public class PlayerScript : MonoBehaviour {
     public float x_tol;
     public UnityEngine.UI.Image healthBar;
     public Sprite[] barImages;
+    public float spawnPosX;
+    public float spawnPosY;
 
     bool falling = false;
     bool grounded = false;
     bool noJumping = false;
     bool inDropThrough = false;
+    bool dashing = false;
     BoxCollider feet;
     int jumps = 2;
     
@@ -127,7 +130,7 @@ public class PlayerScript : MonoBehaviour {
             jumps = 2;
         //Check if attack charge is done
         if (currently_charging){
-            if (falling && rb.velocity.y == 0)
+            if (falling && rb.velocity.y == 0 && !dashing)
             {
                 grounded = true;
                 falling = false;
@@ -352,6 +355,7 @@ public class PlayerScript : MonoBehaviour {
 		hitbox.GetComponent<Dash>().player_owner = name[6];
 		Destroy(hitbox.gameObject, length[2]);
 		attack_counter = 0.0f;
+        StartCoroutine(XCoroutine());
 	}
 	void Y_Attack(){
 		can_attack = false;
@@ -405,11 +409,19 @@ public class PlayerScript : MonoBehaviour {
         moveable = true;
     }
     private IEnumerator YCoroutine()
-        {
+    {
         moveable = false;
         yield return new WaitForSeconds(1f);
         moveable = true;
-        }
+    }
+    private IEnumerator XCoroutine()
+    {
+        moveable = false;
+        dashing = true;
+        yield return new WaitForSeconds(.5f);
+        dashing = false;
+        moveable = true;
+    }
 }
  
 /*=======

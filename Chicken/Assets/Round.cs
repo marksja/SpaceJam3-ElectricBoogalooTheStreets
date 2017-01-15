@@ -33,18 +33,30 @@ public class Round : MonoBehaviour {
     public UnityEngine.UI.Text roundLbl;
     public UnityEngine.UI.Text juicyPhaseName;
     public UnityEngine.UI.Text descriptivePhase;
+    public UnityEngine.UI.Image P1Score;
+    public UnityEngine.UI.Image P2Score;
+    public UnityEngine.UI.Image P1Buttons;
+    public UnityEngine.UI.Image P2Buttons;
+    public UnityEngine.UI.Image P1ButtonSel;
+    public UnityEngine.UI.Image P2ButtonSel;
+    public UnityEngine.UI.Image P1Pan;
+    public UnityEngine.UI.Image P2Pan;
+    public UnityEngine.UI.Image P1ResBar;
+    public UnityEngine.UI.Image P2ResBar;
+    public Sprite[] scoreBar;
+    public Sprite[] resBar;
     bool countdown = false;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
-        round_num = 1;
+        round_num = 0;
         currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
         Update_UI();
-        //gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
+        //gameTransform = GetComponeP2ResBar.enabled = false;ntInParent(typeof(Transform)) as Transform;
         //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
         //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
@@ -55,6 +67,15 @@ public class Round : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (currentPhase == 0)
+        {
+            P1Pan.enabled = false;
+            P2Pan.enabled = false;
+            P1ButtonSel.enabled = false;
+            P2ButtonSel.enabled = false;
+            P1ResBar.enabled = false;
+            P2ResBar.enabled = false;
+        }
         if (currentPhase == 1)
         {
             P1S.moveable = false;
@@ -62,13 +83,16 @@ public class Round : MonoBehaviour {
         }
         if (!countdown)
             timer.text = timeRemaining.ToString("0.00");
+        if (round_num != 0)
             roundLbl.text = "Round " + currentRound.ToString();
+        else
+            roundLbl.text = "Round 1";
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
             {
                 juicyPhaseName.text = "RESTRICT!";
-                descriptivePhase.text = "choose 2 attacks that your foe may not use";
+                descriptivePhase.text = "choose 2 attacks that your foe may not use.";
                 currentPhase = 1;
                 P1S.moveable = false;
                 P2S.moveable = false;
@@ -124,6 +148,7 @@ public class Round : MonoBehaviour {
                 }
             case 1:
                 {
+                    StartCoroutine(RestrictButtons());
                     if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
                         P2_res += "A";
                     if (Input.GetButton(P1S.B) && P2_res.Length < 2 && !P2_res.Contains("B"))
@@ -141,6 +166,8 @@ public class Round : MonoBehaviour {
                         P1_res += "X";
                     if (Input.GetButton(P2S.Y) && P1_res.Length < 2 && !P1_res.Contains("Y"))
                         P1_res += "Y";
+                    P1ResBar.sprite = resBar[P2_res.Length];
+                    P2ResBar.sprite = resBar[P1_res.Length];
                     break;
                 }
             case 2:
@@ -191,10 +218,15 @@ public class Round : MonoBehaviour {
         }
         if(winner == 1){
             P1_wins++;
+            P1S.SCORE++;
+            P1Score.sprite = scoreBar[P1S.SCORE];
         }
         if(winner == 2){
             P2_wins++;
+            P2S.SCORE++;
+            P2Score.sprite = scoreBar[P2S.SCORE];
         }
+        juicyPhaseName.fontSize -= 40;
         currentRound++;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
@@ -209,47 +241,20 @@ public class Round : MonoBehaviour {
     {
         //button restriction screen
         //show button screen
+        P1Pan.enabled = true;
+        P2Pan.enabled = true;
+        P1ButtonSel.enabled = true;
+        P2ButtonSel.enabled = true;
+        P1ResBar.enabled = true;
+        P2ResBar.enabled = true;
+        yield return new WaitForSeconds(RESLIMIT);
+        P1Pan.enabled = false;
+        P2Pan.enabled = false;
+        P1ButtonSel.enabled = false;
+        P2ButtonSel.enabled = false;
+        P1ResBar.enabled = false;
+        P2ResBar.enabled = false;
 
-        //Await button presses
-        while (P2_res.Length < 2 && P1_res.Length < 2)
-        {
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
-                P2_res += P1S.A;
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("B"))
-                P2_res += P1S.B;
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("X"))
-                P2_res += P1S.X;
-            if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("Y"))
-                P2_res += P1S.Y;
-            
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("A"))
-                P1_res += P1S.A;
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("B"))
-                P1_res += P1S.A;
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("X"))
-                P1_res += P1S.A;
-            if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("Y"))
-                P1_res += P1S.A;
-        }
-        if (P1_res.Contains("A"))
-            P1S.a_disabled = true;
-        if (P1_res.Contains("B"))
-            P1S.b_disabled = true;
-        if (P1_res.Contains("X"))
-            P1S.x_disabled = true;
-        if (P1_res.Contains("Y"))
-            P1S.y_disabled = true;
-
-        if (P2_res.Contains("A"))
-            P2S.a_disabled = true;
-        if (P2_res.Contains("B"))
-            P2S.b_disabled = true;
-        if (P2_res.Contains("X"))
-            P2S.x_disabled = true;
-        if (P2_res.Contains("Y"))
-            P2S.y_disabled = true;
-
-        return null;
     }
     
     private IEnumerator startFight()
