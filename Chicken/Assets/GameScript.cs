@@ -13,10 +13,10 @@ public class GameScript : MonoBehaviour {
     const float baseSpeedMult = .8f;
     public Round[] rounds;
 
+    public int currentRound = 0;
+
 	// Use this for initialization
 	void Start () {
-        for (int i = 0; i < rounds.Length; ++i)
-            rounds[i] = new Round();
 	}
 	
 	// Update is called once per frame
@@ -24,6 +24,15 @@ public class GameScript : MonoBehaviour {
         
 
 	}
+
+    float Find_Delta_Hype(){
+        float Comeback_Hype;
+        float Close_Game_Hype;
+        float Round_Hype;
+         
+
+        return 0.0f;
+    }
 
     
 }

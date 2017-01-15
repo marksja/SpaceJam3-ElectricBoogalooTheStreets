@@ -28,3 +28,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+/Chicken/Assets/Round.cs.meta
+/Chicken/Assets/Textures.meta
