@@ -19,18 +19,22 @@ public class Lazor : MonoBehaviour {
 		if(x == null){
 			Debug.Log("Fuuuuuck");
 	}
-		owner_script = x.GetComponent<PlayerScript>();
+        transform.localScale = new Vector3(-Mathf.Sign(rb.GetComponent<Rigidbody>().velocity.x) * 2.144844f, 2.144844f, 0);
+        owner_script = x.GetComponent<PlayerScript>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+        
+        transform.localScale = new Vector3(-Mathf.Sign(rb.GetComponent<Rigidbody>().velocity.x) * 2.144844f, 2.144844f, 0);
+        
 	}
 
 	void OnTriggerEnter(Collider other){
-		Debug.Log("???");
+	//	Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
-            hit.Play();
+ //           hit.Play();
 			if(other.name[6] == player_owner){
 				return;
 			}
@@ -48,15 +52,11 @@ public class Lazor : MonoBehaviour {
 			owner_script.Hype += 4;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
-            if (!clank.isPlaying)
-                clank.Play();
 
         }
 		else if(other.name.Contains("Dash") || other.name.Contains("Quick") || other.name.Contains("Swipe")){
 			owner_script.Hype += 3;
 			Destroy(other.gameObject);
-            if (!clank.isPlaying)
-                clank.Play();
         }
 		
 	}

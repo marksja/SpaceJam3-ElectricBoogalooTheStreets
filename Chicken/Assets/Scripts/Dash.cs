@@ -28,7 +28,6 @@ public class Dash : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
-            hit.Play();
 			if(other.name[6] == player_owner){
 				return;
 			}
@@ -46,14 +45,10 @@ public class Dash : MonoBehaviour {
 			owner_script.Hype += 4;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
-            if (!clank.isPlaying)
-                clank.Play();
         }
 		else if(other.name.Contains("Quick") || other.name.Contains("Swipe")){
 			owner_script.Hype += 3;
 			Destroy(other.gameObject);
-            if (!clank.isPlaying)
-                clank.Play();
         }
 		
 	}
