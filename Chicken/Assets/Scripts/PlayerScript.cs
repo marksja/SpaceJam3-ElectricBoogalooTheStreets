@@ -32,6 +32,7 @@ public class PlayerScript : MonoBehaviour {
 	public Quick hitbox_quick;
 	public Swipe hitbox_arc;
 	public Dash hitbox_dash;
+    public float x_tol;
 
     bool falling = false;
     bool grounded = false;
@@ -59,7 +60,8 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = true;
         feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
-        direction = 1;
+        direction = -1;
+        x_tol = 0.3f;
         anim = child.GetComponent<Animator>();
 	}
 	
@@ -70,24 +72,40 @@ public class PlayerScript : MonoBehaviour {
         var x = Input.GetAxis(LeftX) * Time.deltaTime * 10f;
         var y = -Input.GetAxis(LeftY);
 
-        // Set running if on the ground and unhurt
-        if(x!=0 && damaged == false && grounded == true)
+        //Set tolerance on x
+        if(Mathf.Abs(x) > x_tol)
         {
-            print("Running");
-            anim.SetBool("Running", true);
+            x = 0;
+        }
+
+        
+
+        // Set running if on the ground and unhurt
+        if(x!=0)
+        {
+            // Flip character based on velocity
+            child.transform.localScale = new Vector3(-Mathf.Sign(x)* 1.450662f, 1.450662f, 0);
+            if(damaged == false && grounded == true){
+                //print("Running");
+                anim.SetBool("Running", true);
+            }
+            
         }
         else
         {
             anim.SetBool("Running", false);
         }
 
-        if (y != 0 && damaged == false && falling == true)
+        if (y > 0.3f && damaged == false)
         {
             anim.SetBool("Jumping", true);
+        }else if(y < -0.3f && damaged == false && falling == false){
+            anim.SetBool("Crouching", true);
         }
         else
         {
             anim.SetBool("Jumping", false);
+            anim.SetBool("Crouching", false);
         }
 
         if (grounded)
@@ -113,19 +131,30 @@ public class PlayerScript : MonoBehaviour {
 				currently_charging = false;
 				can_attack = true;
 				switch (last_used){
-					case 0: 
-						A_Attack();
-						break;
+					case 0:
+                        anim.SetBool("Miding", true);
+                        A_Attack();
+                        anim.SetBool("Miding", false);
+                        break;
 					case 1:
-						moveable = false;
+                        anim.SetBool("Charging", true);
+                        moveable = false;
 						B_Attack();
-						break;
+                        anim.SetBool("Charging", false);
+
+                        break;
 					case 2:
-					 	X_Attack();
-					 	break;
+                        anim.SetBool("Dashing", true);
+                         X_Attack();
+                        anim.SetBool("Dashing", false);
+
+                         break;
 					case 3:
-					 	Y_Attack();
-					 	break;
+                        anim.SetBool("Shorting", true);
+                         Y_Attack();
+                        anim.SetBool("Shorting", false);
+
+                         break;
 				}
 				charge_time = 0.0f;
 			}
