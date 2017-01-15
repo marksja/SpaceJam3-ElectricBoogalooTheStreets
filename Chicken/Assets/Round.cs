@@ -10,6 +10,9 @@ public class Round : MonoBehaviour {
 
     bool roundOver;
 
+    public int round_num;
+    public int P1_wins;
+    public int P2_wins;
     public string P2_res;
     public string P1_res;
     public float speedMult;
@@ -22,9 +25,13 @@ public class Round : MonoBehaviour {
     public GameObject Player2;
     public PlayerScript P1S;
     public PlayerScript P2S;
+    public Canvas UI;
 
     // Use this for initialization
     void Start (int pos_in, int res_in, int fight_in) {
+        P1_wins = 0;
+        P2_wins = 0;
+        round_num = 1;
         POSLIMIT = pos_in;
         RESLIMIT = res_in;
         FIGHTLIMIT = fight_in;
@@ -55,6 +62,7 @@ public class Round : MonoBehaviour {
             else if (currentPhase == 2)
             {
                 currentPhase = 3;       //game over
+                End_Round();
             }
         }
         timeRemaining -= Time.deltaTime;
@@ -77,6 +85,7 @@ public class Round : MonoBehaviour {
                         //Player 1 loses
                         P1S.moveable = false;
                         P2S.moveable = false;
+                        End_Round(2);
                         //Display victory screen for player 2
                         //Play of the game, etc
                     }
@@ -84,12 +93,38 @@ public class Round : MonoBehaviour {
                         //Player 2 loses
                         P1S.moveable = false;
                         P2S.moveable = false;
+                        End_Round(1);
                         //Display victory screen for player 1
                         //Play of the game, etc
                     }
                     break;
                 }
         }
+        if(GetButtonDown("R")){
+            timeRemaining = 0.0f;
+            currentPhase = 0;
+        }
+
+    }
+
+    void Update_UI(){
+        //Change round number text
+        //Reset health bar
+        //Update win numbers
+    }
+
+    void End_Round(int winner = 0){
+        if(!winner){
+            //No one won the round. What do?
+        }
+        if(winner == 1){
+            P1_wins++;
+        }
+        if(winner == 2){
+            P2_wins++;
+        }
+        round_num++;
+        Update_UI();
     }
 
     private IEnumerator RestrictButtons()
@@ -101,7 +136,7 @@ public class Round : MonoBehaviour {
         while (P2_res.Length < 2 && P1_res.Length < 2)
         {
             //display struck buttons
-                //do code to show what's struck
+            //do code to show what's struck
 
             //get button inputs
             if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
