@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Round : MonoBehaviour {
 
-    public int POSLIMIT = 10;
-    public int RESLIMIT = 10;
-    public int FIGHTLIMIT = 100;
+    public int POSLIMIT;
+    public int RESLIMIT;
+    public int FIGHTLIMIT;
 
     bool roundOver;
 
@@ -40,9 +40,6 @@ public class Round : MonoBehaviour {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
-        POSLIMIT = 5;
-        RESLIMIT = 3;
-        FIGHTLIMIT = 100;
         currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
@@ -58,6 +55,11 @@ public class Round : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (currentPhase == 1)
+        {
+            P1S.moveable = false;
+            P1S.moveable = false;
+        }
         if (!countdown)
             timer.text = timeRemaining.ToString("0.00");
             roundLbl.text = "Round " + currentRound.ToString();
