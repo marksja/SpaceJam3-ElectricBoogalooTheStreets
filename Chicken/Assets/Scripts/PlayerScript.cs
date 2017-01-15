@@ -24,6 +24,7 @@ public class PlayerScript : MonoBehaviour {
 	public bool y_disabled;
 	public bool moveable;
 	public bool damageable;
+    public bool damaged;
 	int direction;
 	Rigidbody rb;
 	GameObject hb;
@@ -47,24 +48,52 @@ public class PlayerScript : MonoBehaviour {
     public string LeftX;
     public string LeftY;
 
+    public Animator anim;
+    public GameObject child;
 	// Use this for initialization
 	void Start()
     {
     	moveable = true;
     	damageable = false;
+        damaged = false;
         rb = GetComponent<Rigidbody>();
 		can_attack = true;
         feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
         direction = 1;
+        anim = child.GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        //anim = GetComponentInChildren<Animator>();
         //Read Input
         var x = Input.GetAxis(LeftX) * Time.deltaTime * 10f;
         var y = -Input.GetAxis(LeftY);
+
+        // Set running if on the ground and unhurt
+        if(x!=0 && damaged == false && grounded == true)
+        {
+            print("Running");
+            anim.SetBool("Running", true);
+        }
+        else
+        {
+            anim.SetBool("Running", false);
+        }
+
+        if (y != 0 && damaged == false && falling == true)
+        {
+            anim.SetBool("Jumping", true);
+        }
+        else
+        {
+            anim.SetBool("Jumping", false);
+        }
+
         if (grounded)
+            // Animate jumps
+            //anim.SetBool("Jumping", true);
             jumps = 2;
         //Check if attack charge is done
         if (currently_charging){
@@ -72,6 +101,7 @@ public class PlayerScript : MonoBehaviour {
             {
                 grounded = true;
                 falling = false;
+                //anim.SetBool("Jumping", false);
             }
             if (rb.velocity.y > 0)
                 feet.enabled = false;
