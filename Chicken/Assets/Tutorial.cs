@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class on : MonoBehaviour {
+public class Tutorial : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -12,16 +12,8 @@ public class on : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(Input.GetButton("A") || Input.GetButton("A2")){
+			SceneManager.LoadScene ("Main_Menu");
+		}	
 	}
-
-	void onClick(string level_name){
-		Debug.Log("???");
-		if (level_name == "Quit") {
-			Application.Quit ();
-		}
-		SceneManager.LoadScene (level_name);
-	}
-
-
 }
