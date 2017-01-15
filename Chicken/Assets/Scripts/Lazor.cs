@@ -6,7 +6,8 @@ public class Lazor : MonoBehaviour {
 	public char player_owner;
 	PlayerScript enemy_script;
 	PlayerScript owner_script;
-	Rigidbody rb;	
+	Rigidbody rb;
+    public AudioSource hit, clank;
 	public GameObject x;
 	// Use this for initialization
 	void Start () {
@@ -17,7 +18,7 @@ public class Lazor : MonoBehaviour {
 		x = GameObject.Find(temp);
 		if(x == null){
 			Debug.Log("Fuuuuuck");
-		}
+	}
 		owner_script = x.GetComponent<PlayerScript>();
 	}
 	
@@ -29,6 +30,7 @@ public class Lazor : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
+            hit.Play();
 			if(other.name[6] == player_owner){
 				return;
 			}
@@ -46,12 +48,16 @@ public class Lazor : MonoBehaviour {
 			owner_script.Hype += 4;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
+            if (!clank.isPlaying)
+                clank.Play();
 
-		}
+        }
 		else if(other.name.Contains("Dash") || other.name.Contains("Quick") || other.name.Contains("Swipe")){
 			owner_script.Hype += 3;
 			Destroy(other.gameObject);
-		}
+            if (!clank.isPlaying)
+                clank.Play();
+        }
 		
 	}
 }

@@ -8,6 +8,7 @@ public class Quick : MonoBehaviour {
 	PlayerScript enemy_script;
 	PlayerScript owner_script;	
 	public GameObject x;
+    public AudioSource hit, clank;
 	// Use this for initialization
 	void Start () {
 		Debug.Log(player_owner);
@@ -27,8 +28,10 @@ public class Quick : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
-		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
-			if(other.name[6] == player_owner){
+		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player")
+        {
+            hit.Play();
+            if (other.name[6] == player_owner){
 				return;
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
@@ -45,6 +48,8 @@ public class Quick : MonoBehaviour {
 			owner_script.Hype += 3;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
-		}
+            if (!clank.isPlaying)
+                clank.Play();
+        }
 	}
 }

@@ -6,8 +6,9 @@ public class Swipe : MonoBehaviour {
 	public char player_owner;
 	PlayerScript enemy_script;
 	PlayerScript owner_script;
-	public int direction;	
+	public int direction;
 	public GameObject x;
+    public AudioSource hit, clank;
 	// Use this for initialization
 	void Start () {
 		Debug.Log(player_owner);
@@ -16,7 +17,7 @@ public class Swipe : MonoBehaviour {
 		x = GameObject.Find(temp);
 		if(x == null){
 			Debug.Log("Fuuuuuck");
-		}
+	}
 		owner_script = x.GetComponent<PlayerScript>();
 	}
 	
@@ -28,6 +29,7 @@ public class Swipe : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
+                hit.Play();
 			if(other.name[6] == player_owner){
 				return;
 			}
@@ -44,10 +46,14 @@ public class Swipe : MonoBehaviour {
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
 			owner_script.Hype += 4;
-		}
+            if (!clank.isPlaying)
+                clank.Play();
+        }
 		else if(other.name.Contains("Quick")){
 			Destroy(other.gameObject);
 			owner_script.Hype += 3;
-		}
+            if (!clank.isPlaying)
+                clank.Play();
+        }
 	}
 }
