@@ -30,8 +30,13 @@ public class Dash : MonoBehaviour {
 			Destroy(this.gameObject);
 			//Apply Knockback
 		}
-		if(other.name == "Dash_Prefab(Clone)"){
-			//delete other projectile
+		if(other.name.Contains("Dash")){
+			Destroy(this.gameObject);
+			Destroy(other.gameObject);
 		}
+		else if(other.name.Contains("Quick") || other.name.Contains("Swipe")){
+			Destroy(other.gameObject);
+		}
+		
 	}
 }

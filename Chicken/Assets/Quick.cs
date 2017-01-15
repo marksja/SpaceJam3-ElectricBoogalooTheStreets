@@ -31,8 +31,9 @@ public class Quick : MonoBehaviour {
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(600 * direction, 520, 0) );
 		}
-		if(other.name == "Quick_Prefab(Clone)"){
-			//delete other projectile
+		if(other.name.Contains("Quick")){
+			Destroy(this.gameObject);
+			Destroy(other.gameObject);
 		}
 	}
 }

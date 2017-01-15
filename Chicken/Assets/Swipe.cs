@@ -30,8 +30,12 @@ public class Swipe : MonoBehaviour {
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(direction*Mathf.Cos(transform.eulerAngles.x) * 1000, direction*Mathf.Sin(transform.eulerAngles.y) * 1000));
 		}
-		if(other.name == "Swipe_Prefab(Clone)"){
-			//delete other projectile
+		if(other.name.Contains("Swipe")){
+			Destroy(this.gameObject);
+			Destroy(other.gameObject);
+		}
+		else if(other.name.Contains("Quick")){
+			Destroy(other.gameObject);
 		}
 	}
 }

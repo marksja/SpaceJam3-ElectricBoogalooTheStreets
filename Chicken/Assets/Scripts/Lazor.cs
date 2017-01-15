@@ -31,8 +31,12 @@ public class Lazor : MonoBehaviour {
 			other.GetComponent<Rigidbody>().AddForce(rb.velocity * 100 + Vector3.up*300f);
 			Destroy(this.gameObject);
 		}
-		if(other.name == "Lazor_Prefab(Clone)"){
-			//delete other projectile
+		if(other.name.Contains("Lazor")){
+			Destroy(this.gameObject);
+			Destroy(other.gameObject);
+		}
+		else if(other.name.Contains("Dash") || other.name.Contains("Quick") || other.name.Contains("Swipe")){
+			Destroy(other.gameObject);
 		}
 		
 	}
