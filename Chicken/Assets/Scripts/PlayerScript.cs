@@ -32,6 +32,7 @@ public class PlayerScript : MonoBehaviour {
 	public Quick hitbox_quick;
 	public Swipe hitbox_arc;
 	public Dash hitbox_dash;
+    public UnityEngine.UI.Image healthBar;
 
     bool falling = false;
     bool grounded = false;
@@ -294,7 +295,7 @@ public class PlayerScript : MonoBehaviour {
         grounded = false;
         jumps -= 1;
         inDropThrough = true;
-        rb.AddForce(0, -10f, 0);
+        rb.AddForce(0, -30f, 0);
         feet.gameObject.layer = 0;
         Debug.Log("Falling through platform");
         falling = true;
