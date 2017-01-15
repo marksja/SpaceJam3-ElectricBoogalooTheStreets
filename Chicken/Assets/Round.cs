@@ -266,6 +266,7 @@ public class Round : MonoBehaviour {
         descriptivePhase.text = "";
         timeRemaining = FIGHTLIMIT;
         timer.text = timeRemaining.ToString("0.00");
+        Debug.Log("movable");
         P1S.moveable = true;
         P2S.moveable = true;
         yield return new WaitForSeconds(1.5f);

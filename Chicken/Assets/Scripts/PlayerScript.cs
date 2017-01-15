@@ -7,6 +7,11 @@ public class PlayerScript : MonoBehaviour {
     public int SCORE = 0;   //0-3
     public string PLAYERSTATE = "neutral";
 
+    public float maxSpeed;
+    public float acceleration;
+    public float airSpeed;
+    public float airAccel;
+
 	int last_used;
 	float cool_time;
 	public bool currently_charging;
@@ -75,9 +80,7 @@ public class PlayerScript : MonoBehaviour {
         //anim = GetComponentInChildren<Animator>();
         //Read Input
         float x = Input.GetAxis(LeftX) * Time.deltaTime * 5f;
-
-        if(!grounded) x *= .4f;
-
+        
         float y = -Input.GetAxis(LeftY);
 
         //Set tolerance on x
@@ -85,9 +88,7 @@ public class PlayerScript : MonoBehaviour {
         {
             x = 0;
         }
-
         
-
         // Set running if on the ground and unhurt
         if(x!=0)
         {
@@ -140,11 +141,15 @@ public class PlayerScript : MonoBehaviour {
 				can_attack = true;
 				switch (last_used){
 					case 0:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Miding", true);
                         A_Attack();
                         anim.SetBool("Miding", false);
                         break;
 					case 1:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Charging", true);
                         moveable = false;
 						B_Attack();
@@ -152,12 +157,16 @@ public class PlayerScript : MonoBehaviour {
 
                         break;
 					case 2:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Dashing", true);
                          X_Attack();
                         anim.SetBool("Dashing", false);
 
                          break;
 					case 3:
+                        if (grounded)
+                            rb.velocity = new Vector3(0, 0, 0);
                         anim.SetBool("Shorting", true);
                          Y_Attack();
                         anim.SetBool("Shorting", false);
@@ -207,11 +216,26 @@ public class PlayerScript : MonoBehaviour {
 			//Update can_attack
 			cool_time += Time.deltaTime;
 			if(cool_time > cooldown[last_used]) can_attack = true;
-			
-            //Move
-			transform.Translate(x, 0, 0);
 
-			if(x > 0){
+            //Move
+            if (grounded)
+            {
+                float dv = 5 * x * acceleration;
+                float newVX = rb.velocity.x + dv;
+                if (Mathf.Abs(newVX) > maxSpeed)
+                    newVX = maxSpeed * (newVX/Mathf.Abs(newVX));
+                rb.velocity = new Vector3(newVX, rb.velocity.y, 0);
+            }
+            else
+            {
+                float dv = 5 * x * airAccel;
+                float newVX = rb.velocity.x + dv;
+                if (Mathf.Abs(newVX) > airSpeed)
+                    newVX = airSpeed * (newVX / Mathf.Abs(newVX));
+                rb.velocity = new Vector3(newVX, rb.velocity.y, 0);
+            }
+
+            if (x > 0){
 				direction = 1;
 			}
 			if(x < 0){
@@ -287,7 +311,8 @@ public class PlayerScript : MonoBehaviour {
 		hitbox.GetComponent<Quick>().direction = direction;
 		hitbox.transform.parent = transform;
 		Destroy(hitbox.gameObject, length[0]);
-	}
+        StartCoroutine(ACoroutine());
+    }
 	void B_Attack(){
 		moveable = true;
 		can_attack = false;
@@ -297,7 +322,8 @@ public class PlayerScript : MonoBehaviour {
 		proj.GetComponent<Rigidbody>().AddForce(500f * direction, 0, 0);
 		proj.GetComponent<Lazor>().player_owner = name[6];
 		Destroy(proj.gameObject, 5);
-	}
+        StartCoroutine(BCoroutine());
+    }
 	void X_Attack(){
 		can_attack = false;
 		cool_time = 0.0f;
@@ -321,6 +347,7 @@ public class PlayerScript : MonoBehaviour {
 		hb = hitbox.gameObject;
 		Destroy(hitbox.gameObject, length[3] + .05f);
 		attack_counter = 0.0f;
+        StartCoroutine(YCoroutine());
 	}
 
     private IEnumerator Fall()
@@ -346,23 +373,25 @@ public class PlayerScript : MonoBehaviour {
         Debug.Log("Jumping");
         yield return null;
     }
-    /*
-    public string RestrictButtons()
+    
+    private IEnumerator ACoroutine()
     {
-        string btns = "";
-        while (btns.Length < 2)
-        {
-            if (Input.GetButtonDown(A))
-                btns += 'a';
-            else if (Input.GetButtonDown(B))
-                btns += 'b';
-            else if (Input.GetButtonDown(X))
-                btns += 'x';
-            else if (Input.GetButtonDown(Y))
-                btns += 'y';
-        }
-        return btns;
-    }*/
+        moveable = false;
+        yield return new WaitForSeconds(.2f);
+        moveable = true;
+    }
+    private IEnumerator BCoroutine()
+    {
+        moveable = false;
+        yield return new WaitForSeconds(1f);
+        moveable = true;
+    }
+    private IEnumerator YCoroutine()
+    {
+        moveable = false;
+        yield return new WaitForSeconds(1f);
+        moveable = true;
+    }
 }
  
 /*=======
