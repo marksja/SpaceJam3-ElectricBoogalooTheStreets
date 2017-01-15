@@ -12,6 +12,9 @@ public class PlayerScript : MonoBehaviour {
     public float airSpeed;
     public float airAccel;
 
+    //Hype
+    public float Hype;
+
 	int last_used;
 	float cool_time;
 	public bool currently_charging;
@@ -77,7 +80,7 @@ public class PlayerScript : MonoBehaviour {
         feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
         direction = -1;
-        x_tol = 0.9f;
+        x_tol = 0.2f;
         anim = child.GetComponent<Animator>();
 	}
 	
@@ -102,7 +105,7 @@ public class PlayerScript : MonoBehaviour {
         if(x!=0)
         {
             // Flip character based on velocity
-            child.transform.localScale = new Vector3(-Mathf.Sign(x)* 1.450662f, 1.450662f, 0);
+            child.transform.localScale = new Vector3(-Mathf.Sign(x)* 2.144844f, 2.144844f, 0);
             if(damaged == false && grounded == true){
                 //print("Running");
                 anim.SetBool("Running", true);
