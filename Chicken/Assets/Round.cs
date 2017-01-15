@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Round : MonoBehaviour {
 
@@ -168,10 +169,14 @@ public class Round : MonoBehaviour {
             }
             else if(currentPhase == 3)
             {
-                currentPhase = 0;
                 timeRemaining = POSLIMIT;
+                juicyPhaseName.fontSize = 100;
                 juicyPhaseName.text = "POSITION!";
                 descriptivePhase.text = "Move to your starting position of choice.";
+                P1S.damageable = P2S.damageable = false;
+                P1S.a_disabled = P1S.b_disabled = P1S.x_disabled = P1S.y_disabled =
+                    P2S.a_disabled = P2S.b_disabled = P2S.x_disabled = P2S.y_disabled = false;
+                currentPhase = 0;
             }
         }
         timeRemaining -= Time.deltaTime;
@@ -251,7 +256,7 @@ public class Round : MonoBehaviour {
         {
             hypeTier++;
             hypeBar.sprite = hypeFill[hypeTier];
-            speedMult = 1f + .05f * hypeTier;
+            speedMult = 1f + .01f * hypeTier;
             P1S.speedMult = speedMult;
             P2S.speedMult = speedMult;
             P1S.drag += .01f;
@@ -269,7 +274,7 @@ public class Round : MonoBehaviour {
     }
 
     void End_Round(int winner = 0){
-        juicyPhaseName.fontSize -= 40;
+        juicyPhaseName.fontSize = 100;
         Debug.Log("Round Ended");
         if(winner == 0){
             //DRAW
@@ -304,6 +309,22 @@ public class Round : MonoBehaviour {
         P2S.HP = 3;
         descriptivePhase.text = P1_wins + " - " + P2_wins;
         Update_UI();
+        if (P1S.SCORE == 3)
+        {
+            timer.text = "";
+            juicyPhaseName.fontSize = 150;
+            juicyPhaseName.text = "Player 1 Wins!";
+            WaitForSeconds wait = new WaitForSeconds(5f);
+            SceneManager.LoadScene("Main_Menu");
+        }
+        else if (P2S.SCORE == 3)
+        {
+            timer.text = "";
+            juicyPhaseName.fontSize = 150;
+            juicyPhaseName.text = "Player 2 Wins!";
+            WaitForSeconds wait = new WaitForSeconds(5f);
+            SceneManager.LoadScene("Main_Menu");
+        }
     }
 
     float Get_Hype_Differential(){
