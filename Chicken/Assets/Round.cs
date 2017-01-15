@@ -29,6 +29,7 @@ public class Round : MonoBehaviour {
     public PlayerScript P2S;
     public Canvas UI;
     public UnityEngine.UI.Text timer;
+    public UnityEngine.UI.Text round_label;
     public UnityEngine.UI.Text roundLbl;
     public UnityEngine.UI.Text juicyPhaseName;
     public UnityEngine.UI.Text descriptivePhase;
@@ -45,6 +46,7 @@ public class Round : MonoBehaviour {
         currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
+        Update_UI();
         //gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
         //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
         //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
@@ -58,7 +60,7 @@ public class Round : MonoBehaviour {
     void Update () {
         if (!countdown)
             timer.text = timeRemaining.ToString("0.00");
-        roundLbl.text = "Round " + currentRound.ToString();
+            roundLbl.text = "Round " + currentRound.ToString();
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
@@ -176,6 +178,7 @@ public class Round : MonoBehaviour {
 
     void Update_UI(){
         //Change round number text
+        round_label.text = "Round " + currentRound.ToString();
         //Reset health bar
         //Update win numbers
     }
