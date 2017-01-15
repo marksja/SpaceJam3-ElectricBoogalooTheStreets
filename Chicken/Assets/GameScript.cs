@@ -13,9 +13,10 @@ public class GameScript : MonoBehaviour {
     const float baseSpeedMult = .8f;
     public Round[] rounds;
 
+    public int currentRound = 0;
+
 	// Use this for initialization
 	void Start () {
-
 	}
 	
 	// Update is called once per frame
