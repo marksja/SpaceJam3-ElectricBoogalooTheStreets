@@ -28,7 +28,7 @@ public class Round : MonoBehaviour {
     public Canvas UI;
 
     // Use this for initialization
-    void Start (int pos_in, int res_in, int fight_in) {
+    void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
@@ -100,9 +100,13 @@ public class Round : MonoBehaviour {
                     break;
                 }
         }
-        if(GetButtonDown("R")){
-            timeRemaining = 0.0f;
+        if(Input.GetKeyDown(KeyCode.R)){
+            round_num = 0;
+            P1_wins = 0;
+            P2_wins = 0;
+            timeRemaining = POSLIMIT;
             currentPhase = 0;
+            Update_UI();
         }
 
     }
@@ -114,7 +118,7 @@ public class Round : MonoBehaviour {
     }
 
     void End_Round(int winner = 0){
-        if(!winner){
+        if(winner == 0){
             //No one won the round. What do?
         }
         if(winner == 1){

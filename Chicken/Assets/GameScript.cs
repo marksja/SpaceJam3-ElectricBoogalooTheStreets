@@ -30,6 +30,8 @@ public class GameScript : MonoBehaviour {
         float Close_Game_Hype;
         float Round_Hype;
          
+
+        return 0.0f;
     }
 
     
