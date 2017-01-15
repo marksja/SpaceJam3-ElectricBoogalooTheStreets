@@ -159,7 +159,7 @@ public class PlayerScript : MonoBehaviour {
 					case 0:
                         if (grounded)
                             rb.velocity = new Vector3(0, 0, 0);
-                        anim.SetBool("Miding", true);
+                        //anim.SetBool("Miding", true);
                         anim.SetBool("Shorting", true);
                         A_Attack();
                         
@@ -211,11 +211,13 @@ public class PlayerScript : MonoBehaviour {
 			if(attack_counter > length[last_used]) attacking = false;
 			switch (last_used){
 				case 0:// Short
-					//do a thing for quick attack
-					break;
+                       //do a thing for quick attack
+                    //anim.SetBool("Shorting", false);
+                    break;
 				case 1:
-					//Nothing
-					break;
+                    //Nothing
+                    //anim.SetBool("Charging", true);
+                    break;
 				case 2:
 					moveable = false;
 					rb.velocity = new Vector3(20f, 0, 0) * direction;;
@@ -234,7 +236,7 @@ public class PlayerScript : MonoBehaviour {
                 print("ERRRRRRRRRR");
                 anim.SetBool("Shorting", false);
                 anim.SetBool("Miding", false);
-                
+                anim.SetBool("Charging", false);
                 anim.SetBool("Dashing", false);
                 
             }	
@@ -306,14 +308,16 @@ public class PlayerScript : MonoBehaviour {
 			//Attacks
 			if(can_attack){
 				if(Input.GetButtonDown(A)){
-					if(a_disabled){
+                    anim.SetBool("Shorting", true);
+                    if (a_disabled){
 						StartCoroutine(Delayed_Damage(.5f));
 					}
 					last_used = 0;
 					currently_charging = true;
 				}
 				if(Input.GetButtonDown(B)){
-					if(b_disabled){
+                    anim.SetBool("Charging", true);
+                    if (b_disabled){
 						StartCoroutine(Delayed_Damage(.5f));
 					}
 					last_used = 1;
@@ -334,7 +338,8 @@ public class PlayerScript : MonoBehaviour {
 					currently_charging = true;
 				}
 			}
-		}
+        }
+        
         if (grounded && !attacking)
             if (idle.isPlaying == false)
             {
@@ -353,7 +358,8 @@ public class PlayerScript : MonoBehaviour {
 		can_attack = false;
 		cool_time = 0.0f;
         attacking = true;
-		Debug.Log("A attack used");
+        attack_counter = 0.0f;
+        Debug.Log("A attack used");
 		Quick hitbox = (Quick)Instantiate(hitbox_quick, transform.position, Quaternion.identity);
 		hitbox.transform.position += new Vector3(1f, 0, 0) * direction;
 		hitbox.GetComponent<Quick>().player_owner = name[6];

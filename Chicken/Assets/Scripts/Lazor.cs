@@ -19,12 +19,16 @@ public class Lazor : MonoBehaviour {
 		if(x == null){
 			Debug.Log("Fuuuuuck");
 	}
-		owner_script = x.GetComponent<PlayerScript>();
+        transform.localScale = new Vector3(-Mathf.Sign(rb.GetComponent<Rigidbody>().velocity.x) * 2.144844f, 2.144844f, 0);
+        owner_script = x.GetComponent<PlayerScript>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+        
+        transform.localScale = new Vector3(-Mathf.Sign(rb.GetComponent<Rigidbody>().velocity.x) * 2.144844f, 2.144844f, 0);
+        
 	}
 
 	void OnTriggerEnter(Collider other){
