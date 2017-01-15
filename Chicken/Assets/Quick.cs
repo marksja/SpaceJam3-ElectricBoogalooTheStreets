@@ -30,7 +30,6 @@ public class Quick : MonoBehaviour {
 		Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player")
         {
-            hit.Play();
             if (other.name[6] == player_owner){
 				return;
 			}
@@ -48,8 +47,6 @@ public class Quick : MonoBehaviour {
 			owner_script.Hype += 3;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
-            if (!clank.isPlaying)
-                clank.Play();
         }
 	}
 }
