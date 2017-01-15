@@ -10,6 +10,9 @@ public class Round : MonoBehaviour {
 
     bool roundOver;
 
+    public int round_num;
+    public int P1_wins;
+    public int P2_wins;
     public string P2_res;
     public string P1_res;
     public float speedMult;
@@ -18,16 +21,18 @@ public class Round : MonoBehaviour {
     public int currentPhase;
 
     //    Transform gameTransform;
-    public GameObject gameO;
-    public GameScript game;
     public GameObject Player1;
     public GameObject Player2;
     public PlayerScript P1S;
     public PlayerScript P2S;
+    public Canvas UI;
+
     public UnityEngine.UI.Text timer;
     // Use this for initialization
-    void Start ()
-    {
+    void Start () {
+        P1_wins = 0;
+        P2_wins = 0;
+        round_num = 1;
         timer = gameO.GetComponentInChildren<Canvas>().GetComponentInChildren<UnityEngine.UI.Text>();
         POSLIMIT = 10000;
         RESLIMIT = 10000;
@@ -35,11 +40,14 @@ public class Round : MonoBehaviour {
 
         currentPhase = 0;
         timeRemaining = POSLIMIT;
+        //        gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
+        P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
+        P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
     }
 
     // Update is called once per frame
-    void FixedUpdate () {
+    void Update () {
         timer.text = timeRemaining.ToString("0.00");
 
         if (timeRemaining <= 0)
@@ -53,10 +61,13 @@ public class Round : MonoBehaviour {
             {
                 currentPhase = 2;
                 timeRemaining = FIGHTLIMIT;
+                P1S.damageable = true;
+                P2S.damageable = false;
             }
             else if (currentPhase == 2)
             {
                 currentPhase = 3;       //game over
+                End_Round();
             }
         }
         timeRemaining -= Time.deltaTime;
@@ -69,13 +80,60 @@ public class Round : MonoBehaviour {
             case 1:
                 {
                     StartCoroutine(RestrictButtons());
+
                     break;
                 }
             case 2:
                 {
+                   
+                    if(P1S.HP <= 0){
+                        //Player 1 loses
+                        P1S.moveable = false;
+                        P2S.moveable = false;
+                        End_Round(2);
+                        //Display victory screen for player 2
+                        //Play of the game, etc
+                    }
+                    if(P2S.HP <= 0){
+                        //Player 2 loses
+                        P1S.moveable = false;
+                        P2S.moveable = false;
+                        End_Round(1);
+                        //Display victory screen for player 1
+                        //Play of the game, etc
+                    }
                     break;
                 }
         }
+        if(Input.GetKeyDown(KeyCode.R)){
+            round_num = 0;
+            P1_wins = 0;
+            P2_wins = 0;
+            timeRemaining = POSLIMIT;
+            currentPhase = 0;
+            Update_UI();
+        }
+
+    }
+
+    void Update_UI(){
+        //Change round number text
+        //Reset health bar
+        //Update win numbers
+    }
+
+    void End_Round(int winner = 0){
+        if(winner == 0){
+            //No one won the round. What do?
+        }
+        if(winner == 1){
+            P1_wins++;
+        }
+        if(winner == 2){
+            P2_wins++;
+        }
+        round_num++;
+        Update_UI();
     }
 
     private IEnumerator RestrictButtons()
