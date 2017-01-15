@@ -21,19 +21,21 @@ public class Round : MonoBehaviour {
     public int currentPhase;
 
     //    Transform gameTransform;
+    public GameObject gameO;
+    public GameScript game;
     public GameObject Player1;
     public GameObject Player2;
     public PlayerScript P1S;
     public PlayerScript P2S;
     public Canvas UI;
-
     public UnityEngine.UI.Text timer;
+
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
-        timer = gameO.GetComponentInChildren<Canvas>().GetComponentInChildren<UnityEngine.UI.Text>();
+  //      timer = gameO.GetComponentInChildren<Canvas>().GetComponentInChildren<UnityEngine.UI.Text>();
         POSLIMIT = 10000;
         RESLIMIT = 10000;
         FIGHTLIMIT = 10000;
