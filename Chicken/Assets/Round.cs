@@ -43,8 +43,10 @@ public class Round : MonoBehaviour {
     public UnityEngine.UI.Image P2Pan;
     public UnityEngine.UI.Image P1ResBar;
     public UnityEngine.UI.Image P2ResBar;
+    public UnityEngine.UI.Image hypeBar;
     public Sprite[] scoreBar;
     public Sprite[] resBar;
+    public Sprite[] hypeFill;
     bool countdown = false;
     public AudioSource deathSound;
 
@@ -52,6 +54,10 @@ public class Round : MonoBehaviour {
     float P1_Previous_Hype;
     float P2_Previous_Hype;
     public float total_hype;
+    public UnityEngine.UI.Text HYPELABEL;
+    public int maxHype = 10000000;
+    public int[] hypeTiers;
+    public int hypeTier;
 
     // Use this for initialization
     void Start () {
@@ -60,6 +66,7 @@ public class Round : MonoBehaviour {
         round_num = 0;
         currentRound = 0;
         currentPhase = 0;
+        total_hype = 0;
         timeRemaining = POSLIMIT;
         Update_UI();
         //gameTransform = GetComponeP2ResBar.enabled = false;ntInParent(typeof(Transform)) as Transform;
@@ -68,11 +75,11 @@ public class Round : MonoBehaviour {
 
         juicyPhaseName.text = "POSITION!";
         descriptivePhase.text = "Move to your starting position of choice.";
-
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update ()
+    {
         if (currentPhase == 0)
         {
             P1Pan.enabled = false;
@@ -239,6 +246,20 @@ public class Round : MonoBehaviour {
             Update_UI();
         }
         total_hype += Get_Hype_Differential();
+        total_hype = Mathf.Min(total_hype, maxHype);
+        HYPELABEL.text = total_hype.ToString("N");
+        if (total_hype > hypeTiers[hypeTier])
+        {
+            hypeTier++;
+            hypeBar.sprite = hypeFill[hypeTier];
+            speedMult = 1f + .05f * hypeTier;
+            P1S.speedMult = speedMult;
+            P2S.speedMult = speedMult;
+            P1S.drag += .01f;
+            P2S.drag += .01f;
+
+        }
+        
     }
 
     void Update_UI(){
