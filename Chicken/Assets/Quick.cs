@@ -6,9 +6,10 @@ public class Quick : MonoBehaviour {
 	public int player_owner;
 	public int direction;
 	PlayerScript enemy_script;
+	PlayerScript owner_script;
 	// Use this for initialization
 	void Start () {
-	
+		owner_script = GameObject.Find("Player"+player_owner).GetComponent<PlayerScript>();
 	}
 	
 	// Update is called once per frame
@@ -26,12 +27,14 @@ public class Quick : MonoBehaviour {
 			Debug.Log("Hit enemy");
 			if(enemy_script.damageable){
 				enemy_script.HP--;
+				owner_script.Hype += 5;
 			}
 			//Destroy(this.gameObject);
 			//Apply Knockback
 			other.GetComponent<Rigidbody>().AddForce(new Vector3(600 * direction, 520, 0) );
 		}
 		if(other.name.Contains("Quick")){
+			owner_script.Hype += 3;
 			Destroy(this.gameObject);
 			Destroy(other.gameObject);
 		}

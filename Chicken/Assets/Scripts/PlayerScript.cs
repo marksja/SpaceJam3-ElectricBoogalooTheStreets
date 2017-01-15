@@ -13,9 +13,6 @@ public class PlayerScript : MonoBehaviour {
     public float airAccel;
 
     //Hype
-    //Due to the way the that attacks work, it's actually easier to have the 
-    //other player keep track of Hype for your character. This variable is
-    //the Hype that the other player has accumulated
     public float Hype;
 
 	int last_used;

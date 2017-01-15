@@ -242,14 +242,13 @@ public class Round : MonoBehaviour {
         P2S.HP = 3;
     }
 
-    //Remember here that Hype for a script is the other player's Hype, not the script owner's hype
     float Get_Hype_Differential(){
-        if(P2S.Hype == P1_Previous_Hype) return 0.0f;
-        if(P1S.Hype == P2_Previous_Hype) return 0.0f;
+        if(P1S.Hype == P1_Previous_Hype) return 0.0f;
+        if(P2S.Hype == P2_Previous_Hype) return 0.0f;
         float time_hype = 500f*(20f/timeRemaining);
         float close_game_hype = 500f*(round_num)/(Mathf.Abs(P1_wins - P2_wins) + 1);
-        float p1_underdog_hype = (P2S.HP - P1S.HP) * (P2_wins - P1_wins) * 500f;
-        float p2_underdog_hype = (P1S.HP - P2S.HP) * (P1_wins - P2_wins) * 500f;
+        float p1_underdog_hype = (P1S.HP - P1S.HP) * (P2_wins - P1_wins) * 500f;
+        float p2_underdog_hype = (P2S.HP - P2S.HP) * (P1_wins - P2_wins) * 500f;
         float P1_hype_diff = P2S.Hype - P1_Previous_Hype;
         float P2_hype_diff = P1S.Hype - P2_Previous_Hype;
 
