@@ -29,20 +29,21 @@ public class Round : MonoBehaviour {
     public PlayerScript P2S;
     public Canvas UI;
     public UnityEngine.UI.Text timer;
-    public UnityEngine.UI.Text round;
+    public UnityEngine.UI.Text round_label;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
-        timer = UI.GetComponentInChildren<UnityEngine.UI.Text>();
+        //timer = UI.GetComponentInChildren<UnityEngine.UI.Text>();
         POSLIMIT = 10;
         RESLIMIT = 10;
         FIGHTLIMIT = 100;
         currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
+        Update_UI();
         //gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
         //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
         //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
@@ -52,7 +53,6 @@ public class Round : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         timer.text = timeRemaining.ToString("0.00");
-        round.text = "Round " + currentRound.ToString();
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
@@ -168,6 +168,7 @@ public class Round : MonoBehaviour {
 
     void Update_UI(){
         //Change round number text
+        round_label.text = "Round " + currentRound.ToString();
         //Reset health bar
         //Update win numbers
     }
