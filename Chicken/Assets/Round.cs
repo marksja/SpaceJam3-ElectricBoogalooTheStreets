@@ -20,13 +20,14 @@ public class Round : MonoBehaviour {
     public int currentRound;
     public int currentPhase;
 
-//    Transform gameTransform;
+    //    Transform gameTransform;
     public GameObject Player1;
     public GameObject Player2;
     public PlayerScript P1S;
     public PlayerScript P2S;
     public Canvas UI;
 
+    public UnityEngine.UI.Text timer;
     // Use this for initialization
     void Start () {
         P1_wins = 0;
@@ -36,6 +37,7 @@ public class Round : MonoBehaviour {
         RESLIMIT = 10;
         FIGHTLIMIT = 100;
         currentRound = 1;
+        timer = gameO.GetComponentInChildren<Canvas>().GetComponentInChildren<UnityEngine.UI.Text>();
         currentPhase = 0;
         timeRemaining = POSLIMIT;
         //        gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
@@ -44,7 +46,10 @@ public class Round : MonoBehaviour {
 
     }
 
+    // Update is called once per frame
     void Update () {
+        timer.text = timeRemaining.ToString("0.00");
+
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
@@ -148,7 +153,7 @@ public class Round : MonoBehaviour {
         while (P2_res.Length < 2 && P1_res.Length < 2)
         {
             //display struck buttons
-            //do code to show what's struck
+                //do code to show what's struck
 
             //get button inputs
             if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
