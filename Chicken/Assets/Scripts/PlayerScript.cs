@@ -33,6 +33,7 @@ public class PlayerScript : MonoBehaviour {
 	public Swipe hitbox_arc;
 	public Dash hitbox_dash;
     public float x_tol;
+    public UnityEngine.UI.Image healthBar;
 
     bool falling = false;
     bool grounded = false;
@@ -69,8 +70,11 @@ public class PlayerScript : MonoBehaviour {
 	void Update () {
         //anim = GetComponentInChildren<Animator>();
         //Read Input
-        var x = Input.GetAxis(LeftX) * Time.deltaTime * 10f;
-        var y = -Input.GetAxis(LeftY);
+        float x = Input.GetAxis(LeftX) * Time.deltaTime * 5f;
+
+        if(!grounded) x *= .4f;
+
+        float y = -Input.GetAxis(LeftY);
 
         //Set tolerance on x
         if(Mathf.Abs(x) > x_tol)
@@ -320,7 +324,7 @@ public class PlayerScript : MonoBehaviour {
         grounded = false;
         jumps -= 1;
         inDropThrough = true;
-        rb.AddForce(0, -10f, 0);
+        rb.AddForce(0, -30f, 0);
         feet.gameObject.layer = 0;
         Debug.Log("Falling through platform");
         falling = true;

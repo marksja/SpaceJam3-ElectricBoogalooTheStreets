@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Round : MonoBehaviour {
 
-    int POSLIMIT;
-    int RESLIMIT;
-    int FIGHTLIMIT;
+    public int POSLIMIT = 10;
+    public int RESLIMIT = 10;
+    public int FIGHTLIMIT = 100;
 
     bool roundOver;
 
@@ -29,20 +29,21 @@ public class Round : MonoBehaviour {
     public PlayerScript P2S;
     public Canvas UI;
     public UnityEngine.UI.Text timer;
+    public UnityEngine.UI.Text round;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
-  //      timer = gameO.GetComponentInChildren<Canvas>().GetComponentInChildren<UnityEngine.UI.Text>();
+        timer = UI.GetComponentInChildren<UnityEngine.UI.Text>();
         POSLIMIT = 10;
         RESLIMIT = 10;
         FIGHTLIMIT = 100;
         currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
-        //        gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
+        //gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
         //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
         //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
@@ -51,20 +52,50 @@ public class Round : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         timer.text = timeRemaining.ToString("0.00");
-
+        round.text = "Round " + currentRound.ToString();
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
             {
                 currentPhase = 1;
+                P1S.moveable = false;
+                P2S.moveable = false;
                 timeRemaining = RESLIMIT;
             }
             else if (currentPhase == 1)
             {
                 currentPhase = 2;
                 timeRemaining = FIGHTLIMIT;
+                P1S.moveable = true;
+                P2S.moveable = true;
                 P1S.damageable = true;
                 P2S.damageable = true;
+                if(P1_res.Length == 2){
+                    if (P1_res.Contains("A"))
+                        P1S.a_disabled = true;
+                    if (P1_res.Contains("B"))
+                        P1S.b_disabled = true;
+                    if (P1_res.Contains("X"))
+                        P1S.x_disabled = true;
+                    if (P1_res.Contains("Y"))
+                        P1S.y_disabled = true;
+                }
+                else{
+                    //If player 2 has not selected 2 buttons
+                }
+                if(P2_res.Length == 2){
+                    if (P2_res.Contains("A"))
+                        P2S.a_disabled = true;
+                    if (P2_res.Contains("B"))
+                        P2S.b_disabled = true;
+                    if (P2_res.Contains("X"))
+                        P2S.x_disabled = true;
+                    if (P2_res.Contains("Y"))
+                        P2S.y_disabled = true;
+                }
+                else{
+                    //If player 1 has not selected 2 buttons
+                }
             }
             else if (currentPhase == 2)
             {
@@ -81,8 +112,23 @@ public class Round : MonoBehaviour {
                 }
             case 1:
                 {
-                    //StartCoroutine(RestrictButtons());
-
+                    if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
+                        P2_res += "A";
+                    if (Input.GetButton(P1S.B) && P2_res.Length < 2 && !P2_res.Contains("B"))
+                        P2_res += "B";
+                    if (Input.GetButton(P1S.X) && P2_res.Length < 2 && !P2_res.Contains("X"))
+                        P2_res += "X";
+                    if (Input.GetButton(P1S.Y) && P2_res.Length < 2 && !P2_res.Contains("Y"))
+                        P2_res += "Y";
+                    
+                    if (Input.GetButton(P2S.A) && P1_res.Length < 2 && !P1_res.Contains("A"))
+                        P1_res += "A";
+                    if (Input.GetButton(P2S.B) && P1_res.Length < 2 && !P1_res.Contains("B"))
+                        P1_res += "B";
+                    if (Input.GetButton(P2S.X) && P1_res.Length < 2 && !P1_res.Contains("X"))
+                        P1_res += "X";
+                    if (Input.GetButton(P2S.Y) && P1_res.Length < 2 && !P1_res.Contains("Y"))
+                        P1_res += "Y";
                     break;
                 }
             case 2:
@@ -154,10 +200,6 @@ public class Round : MonoBehaviour {
         //Await button presses
         while (P2_res.Length < 2 && P1_res.Length < 2)
         {
-            //display struck buttons
-                //do code to show what's struck
-
-            //get button inputs
             if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("A"))
                 P2_res += P1S.A;
             if (Input.GetButton(P1S.A) && P2_res.Length < 2 && !P2_res.Contains("B"))
