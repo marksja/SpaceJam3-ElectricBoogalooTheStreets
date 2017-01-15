@@ -212,13 +212,12 @@ public class Round : MonoBehaviour {
                 }
             case 2:
                 {
-
-       //             if (P2S.HP == P1S.HP && (P2S.HP == 0 || timeRemaining <= 0))
-        //            {
-         //               P1S.moveable = false;
-          //              P2S.moveable = false;
-           //             End_Round(0);
-            //        }
+                    if ((P2S.HP <= 0 && P1S.HP <= 0)|| timeRemaining <= 0)
+                    {
+                        P1S.moveable = false;
+                        P2S.moveable = false;
+                        End_Round(0);
+                    }
                     if (P1S.HP <= 0){
                         //Player 1 loses
                         deathSound.Play();
@@ -284,6 +283,8 @@ public class Round : MonoBehaviour {
             P1S.SCORE++;
             P2_wins++;
             P2S.SCORE++;
+            P1Score.sprite = scoreBar[P1S.SCORE];
+            P2Score.sprite = scoreBar[P2S.SCORE];
         }
         if(winner == 1){
             juicyPhaseName.text = "Player 1 Wins!";
