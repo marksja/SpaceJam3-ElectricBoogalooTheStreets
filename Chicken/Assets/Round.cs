@@ -29,16 +29,18 @@ public class Round : MonoBehaviour {
     public PlayerScript P2S;
     public Canvas UI;
     public UnityEngine.UI.Text timer;
-    public UnityEngine.UI.Text round_label;
+    public UnityEngine.UI.Text roundLbl;
+    public UnityEngine.UI.Text juicyPhaseName;
+    public UnityEngine.UI.Text descriptivePhase;
+    bool countdown = false;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
-        //timer = UI.GetComponentInChildren<UnityEngine.UI.Text>();
-        POSLIMIT = 10;
-        RESLIMIT = 10;
+        POSLIMIT = 5;
+        RESLIMIT = 3;
         FIGHTLIMIT = 100;
         currentRound = 1;
         currentPhase = 0;
@@ -48,15 +50,22 @@ public class Round : MonoBehaviour {
         //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
         //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
+        juicyPhaseName.text = "POSITION!";
+        descriptivePhase.text = "Move to your starting position of choice.";
+
     }
 
     // Update is called once per frame
     void Update () {
-        timer.text = timeRemaining.ToString("0.00");
+        if (!countdown)
+            timer.text = timeRemaining.ToString("0.00");
+            roundLbl.text = "Round " + currentRound.ToString();
         if (timeRemaining <= 0)
         {
             if (currentPhase == 0)
             {
+                juicyPhaseName.text = "RESTRICT!";
+                descriptivePhase.text = "choose 2 attacks that your foe may not use";
                 currentPhase = 1;
                 P1S.moveable = false;
                 P2S.moveable = false;
@@ -64,10 +73,9 @@ public class Round : MonoBehaviour {
             }
             else if (currentPhase == 1)
             {
+                StartCoroutine(startFight());
+
                 currentPhase = 2;
-                timeRemaining = FIGHTLIMIT;
-                P1S.moveable = true;
-                P2S.moveable = true;
                 P1S.damageable = true;
                 P2S.damageable = true;
                 if(P1_res.Length == 2){
@@ -100,6 +108,7 @@ public class Round : MonoBehaviour {
             else if (currentPhase == 2)
             {
                 currentPhase = 3;       //game over
+
                 End_Round();
             }
         }
@@ -197,7 +206,7 @@ public class Round : MonoBehaviour {
     {
         //button restriction screen
         //show button screen
-            //code
+
         //Await button presses
         while (P2_res.Length < 2 && P1_res.Length < 2)
         {
@@ -238,5 +247,30 @@ public class Round : MonoBehaviour {
             P2S.y_disabled = true;
 
         return null;
+    }
+    
+    private IEnumerator startFight()
+    {
+        countdown = true;
+        timer.text = FIGHTLIMIT.ToString("0.00");
+        juicyPhaseName.fontSize += 10;
+        juicyPhaseName.text = "3";
+        yield return new WaitForSeconds(1f);
+        juicyPhaseName.fontSize += 10;
+        juicyPhaseName.text = "2";
+        yield return new WaitForSeconds(1f);
+        juicyPhaseName.fontSize += 10;
+        juicyPhaseName.text = "1";
+        yield return new WaitForSeconds(1f);
+        countdown = false;
+        juicyPhaseName.fontSize += 10;
+        juicyPhaseName.text = "FIGHT!";
+        descriptivePhase.text = "";
+        timeRemaining = FIGHTLIMIT;
+        timer.text = timeRemaining.ToString("0.00");
+        P1S.moveable = true;
+        P2S.moveable = true;
+        yield return new WaitForSeconds(1.5f);
+        juicyPhaseName.text = "";
     }
 }

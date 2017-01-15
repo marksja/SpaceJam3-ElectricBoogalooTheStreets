@@ -34,6 +34,7 @@ public class PlayerScript : MonoBehaviour {
 	public Dash hitbox_dash;
     public float x_tol;
     public UnityEngine.UI.Image healthBar;
+    public Sprite[] barImages;
 
     bool falling = false;
     bool grounded = false;
@@ -68,6 +69,9 @@ public class PlayerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //update health bar
+        healthBar.sprite = barImages[HP];
+
         //anim = GetComponentInChildren<Animator>();
         //Read Input
         float x = Input.GetAxis(LeftX) * Time.deltaTime * 5f;
