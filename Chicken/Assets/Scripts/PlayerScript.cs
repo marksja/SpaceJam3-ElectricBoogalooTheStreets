@@ -295,19 +295,31 @@ public class PlayerScript : MonoBehaviour {
 
 			//Attacks
 			if(can_attack){
-				if(Input.GetButtonDown(A) && !a_disabled){
+				if(Input.GetButtonDown(A)){
+					if(a_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 0;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown(B) && !b_disabled){
+				if(Input.GetButtonDown(B)){
+					if(b_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 1;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown(X) && !x_disabled){
+				if(Input.GetButtonDown(X)){
+					if(x_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 2;
 					currently_charging = true;
 				}
-				if(Input.GetButtonDown(Y) && !y_disabled){
+				if(Input.GetButtonDown(Y)){
+					if(y_disabled){
+						StartCoroutine(Delayed_Damage(.5f));
+					}
 					last_used = 3;
 					currently_charging = true;
 				}
@@ -355,7 +367,7 @@ public class PlayerScript : MonoBehaviour {
 		hitbox.GetComponent<Dash>().player_owner = name[6];
 		Destroy(hitbox.gameObject, length[2]);
 		attack_counter = 0.0f;
-        StartCoroutine(XCoroutine());
+		StartCoroutine(XCoroutine());
 	}
 	void Y_Attack(){
 		can_attack = false;
@@ -409,18 +421,26 @@ public class PlayerScript : MonoBehaviour {
         moveable = true;
     }
     private IEnumerator YCoroutine()
-    {
+        {
         moveable = false;
         yield return new WaitForSeconds(1f);
         moveable = true;
-    }
+        }
+
+
     private IEnumerator XCoroutine()
     {
         moveable = false;
         dashing = true;
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(length[2]);
         dashing = false;
         moveable = true;
+    }
+
+    private IEnumerator Delayed_Damage(float time){
+    	yield return new WaitForSeconds(time);
+    	//take damage animation
+    	HP--;
     }
 }
  
