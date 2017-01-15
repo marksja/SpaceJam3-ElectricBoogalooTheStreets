@@ -81,7 +81,7 @@ public class PlayerScript : MonoBehaviour {
         feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
         direction = -1;
-        x_tol = 0.2f;
+        x_tol = 0.6f;
         anim = child.GetComponent<Animator>();
 	}
 	
@@ -99,8 +99,9 @@ public class PlayerScript : MonoBehaviour {
         //Set tolerance on x
         if(Mathf.Abs(x) > x_tol || crouching == true)
         {
-            x = 0;
+           // x = 0;
         }
+        print("X:"+x);
 
         // Set running if on the ground and unhurt
         if(x!=0)
@@ -153,6 +154,7 @@ public class PlayerScript : MonoBehaviour {
             charge_time += Time.deltaTime;
 			if(charge_time > charging[last_used]){
 				currently_charging = false;
+
 				can_attack = true;
 				switch (last_used){
 					case 0:
@@ -189,7 +191,8 @@ public class PlayerScript : MonoBehaviour {
 
                          break;
 				}
-				charge_time = 0.0f;
+                //anim.SetBool("Charging", false);
+                charge_time = 0.0f;
 			}
 		}
 
@@ -232,7 +235,7 @@ public class PlayerScript : MonoBehaviour {
                 print("ERRRRRRRRRR");
                 anim.SetBool("Shorting", false);
                 anim.SetBool("Miding", false);
-                anim.SetBool("Charging", false);
+                
                 anim.SetBool("Dashing", false);
                 
             }	
