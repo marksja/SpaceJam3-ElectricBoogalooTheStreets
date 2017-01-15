@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameScript : MonoBehaviour {
-    public int POSLIMIT;
-    public int RESLIMIT;
-    public int FIGHTLIMIT;
-
     public float HYPELEVEL;
     public int HYPETIER;    //0 - 7
     public int HYPEPERCENT;
