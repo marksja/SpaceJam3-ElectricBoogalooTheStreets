@@ -25,6 +25,7 @@ public class PlayerScript : MonoBehaviour {
 	public bool moveable;
 	public bool damageable;
     public bool damaged;
+    public bool crouching;
 	int direction;
 	Rigidbody rb;
 	GameObject hb;
@@ -57,12 +58,13 @@ public class PlayerScript : MonoBehaviour {
     	moveable = true;
     	damageable = false;
         damaged = false;
+        crouching = false;
         rb = GetComponent<Rigidbody>();
 		can_attack = true;
         feet = transform.GetChild(0).GetComponent("BoxCollider") as BoxCollider;
         Physics.IgnoreLayerCollision(0, 8, true);
         direction = -1;
-        x_tol = 0.3f;
+        x_tol = 0.9f;
         anim = child.GetComponent<Animator>();
 	}
 	
@@ -77,7 +79,7 @@ public class PlayerScript : MonoBehaviour {
         float y = -Input.GetAxis(LeftY);
 
         //Set tolerance on x
-        if(Mathf.Abs(x) > x_tol)
+        if(Mathf.Abs(x) > x_tol || crouching == true)
         {
             x = 0;
         }
@@ -105,11 +107,13 @@ public class PlayerScript : MonoBehaviour {
             anim.SetBool("Jumping", true);
         }else if(y < -0.3f && damaged == false && falling == false){
             anim.SetBool("Crouching", true);
+            crouching = true;
         }
         else
         {
             anim.SetBool("Jumping", false);
             anim.SetBool("Crouching", false);
+            crouching = false;
         }
 
         if (grounded)
@@ -129,34 +133,34 @@ public class PlayerScript : MonoBehaviour {
             else
                 feet.enabled = true;
 
-
+            // Start charge and the attack animations
             charge_time += Time.deltaTime;
 			if(charge_time > charging[last_used]){
 				currently_charging = false;
 				can_attack = true;
 				switch (last_used){
 					case 0:
-                        anim.SetBool("Miding", true);
+                        anim.SetBool("Shorting", true);
                         A_Attack();
-                        anim.SetBool("Miding", false);
+                        
                         break;
 					case 1:
                         anim.SetBool("Charging", true);
                         moveable = false;
 						B_Attack();
-                        anim.SetBool("Charging", false);
+                        
 
                         break;
 					case 2:
                         anim.SetBool("Dashing", true);
                          X_Attack();
-                        anim.SetBool("Dashing", false);
+                        
 
                          break;
 					case 3:
-                        anim.SetBool("Shorting", true);
+                        anim.SetBool("Miding", true);
                          Y_Attack();
-                        anim.SetBool("Shorting", false);
+                        
 
                          break;
 				}
@@ -179,7 +183,7 @@ public class PlayerScript : MonoBehaviour {
             attack_counter += Time.deltaTime;
 			if(attack_counter > length[last_used]) attacking = false;
 			switch (last_used){
-				case 0:
+				case 0:// Short
 					//do a thing for quick attack
 					break;
 				case 1:
@@ -196,7 +200,17 @@ public class PlayerScript : MonoBehaviour {
 				case 3:
 					hb.transform.Rotate(-Vector3.forward * 90 * Time.deltaTime / length[3] * direction);
 					break;
-			}	
+			}
+            // Stop the attack animations
+            if(attacking == false)
+            {
+                print("ERRRRRRRRRR");
+                anim.SetBool("Shorting", false);
+                anim.SetBool("Miding", false);
+                anim.SetBool("Charging", false);
+                anim.SetBool("Dashing", false);
+                
+            }	
 		}
 
 		if(moveable){
@@ -276,18 +290,21 @@ public class PlayerScript : MonoBehaviour {
 	void A_Attack(){
 		can_attack = false;
 		cool_time = 0.0f;
-		Debug.Log("A attack used");
+        attacking = true;
+        Debug.Log("A attack used");
 		Quick hitbox = (Quick)Instantiate(hitbox_quick, transform.position, Quaternion.identity);
 		hitbox.transform.position += new Vector3(1f, 0, 0) * direction;
 		hitbox.GetComponent<Quick>().player_owner = name[6];
 		hitbox.GetComponent<Quick>().direction = direction;
 		hitbox.transform.parent = transform;
 		Destroy(hitbox.gameObject, length[0]);
+        print("REEEEEEEEE");
 	}
 	void B_Attack(){
 		moveable = true;
 		can_attack = false;
-		cool_time = 0.0f;
+        attacking = true;
+        cool_time = 0.0f;
 		Debug.Log("B attack used");
 		Lazor proj = (Lazor)Instantiate(projectile, transform.position + Vector3.right*1.5f*direction, Quaternion.identity);
 		proj.GetComponent<Rigidbody>().AddForce(500f * direction, 0, 0);
