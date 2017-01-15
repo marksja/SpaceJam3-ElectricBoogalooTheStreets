@@ -151,7 +151,7 @@ public class Round : MonoBehaviour {
     {
         //button restriction screen
         //show button screen
-            //code
+
         //Await button presses
         while (P2_res.Length < 2 && P1_res.Length < 2)
         {
