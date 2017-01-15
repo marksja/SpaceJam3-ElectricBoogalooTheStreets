@@ -50,7 +50,7 @@ public class Round : MonoBehaviour {
     //Hype Algoritm
     float P1_Previous_Hype;
     float P2_Previous_Hype;
-    float total_hype;
+    public float total_hype;
 
     // Use this for initialization
     void Start () {
@@ -243,8 +243,8 @@ public class Round : MonoBehaviour {
     }
 
     float Get_Hype_Differential(){
-        if(P1S.Hype == P1_Previous_Hype) return 0.0f;
-        if(P2S.Hype == P2_Previous_Hype) return 0.0f;
+        Debug.Log("Hype: " + total_hype);
+        if(P1S.Hype == P1_Previous_Hype && P2S.Hype == P2_Previous_Hype) return 0.0f;
         float time_hype = 500f*(20f/timeRemaining);
         float close_game_hype = 500f*(round_num)/(Mathf.Abs(P1_wins - P2_wins) + 1);
         float p1_underdog_hype = (P1S.HP - P1S.HP) * (P2_wins - P1_wins) * 500f;
@@ -252,11 +252,16 @@ public class Round : MonoBehaviour {
         float P1_hype_diff = P2S.Hype - P1_Previous_Hype;
         float P2_hype_diff = P1S.Hype - P2_Previous_Hype;
 
+        P1_Previous_Hype = P1S.Hype;
+        P2_Previous_Hype = P2S.Hype;
+
         P1_hype_diff *= time_hype + close_game_hype + p1_underdog_hype;
         P2_hype_diff *= time_hype + close_game_hype + p1_underdog_hype;
 
         if(P1_hype_diff < 0) P1_hype_diff = 0;
         if(P2_hype_diff < 0) P2_hype_diff = 0;
+
+
 
         return P1_hype_diff + P2_hype_diff;
     }
