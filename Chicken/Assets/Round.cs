@@ -32,15 +32,15 @@ public class Round : MonoBehaviour {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 1;
-        POSLIMIT = 10000;
-        RESLIMIT = 10000;
-        FIGHTLIMIT = 10000;
-
+        POSLIMIT = 10;
+        RESLIMIT = 10;
+        FIGHTLIMIT = 100;
+        currentRound = 1;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
         //        gameTransform = GetComponentInParent(typeof(Transform)) as Transform;
-        P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
-        P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
+        //P1S = Player1.GetComponent<PlayerScript>() as PlayerScript;
+        //P2S = Player2.GetComponent<PlayerScript>() as PlayerScript;
 
     }
 
@@ -57,7 +57,7 @@ public class Round : MonoBehaviour {
                 currentPhase = 2;
                 timeRemaining = FIGHTLIMIT;
                 P1S.damageable = true;
-                P2S.damageable = false;
+                P2S.damageable = true;
             }
             else if (currentPhase == 2)
             {
@@ -74,7 +74,7 @@ public class Round : MonoBehaviour {
                 }
             case 1:
                 {
-                    StartCoroutine(RestrictButtons());
+                    //StartCoroutine(RestrictButtons());
 
                     break;
                 }
@@ -83,6 +83,7 @@ public class Round : MonoBehaviour {
                    
                     if(P1S.HP <= 0){
                         //Player 1 loses
+                        Debug.Log("Player 1 Loses");
                         P1S.moveable = false;
                         P2S.moveable = false;
                         End_Round(2);
@@ -91,6 +92,7 @@ public class Round : MonoBehaviour {
                     }
                     if(P2S.HP <= 0){
                         //Player 2 loses
+                        Debug.Log("Player 2 Loses");
                         P1S.moveable = false;
                         P2S.moveable = false;
                         End_Round(1);
@@ -127,8 +129,14 @@ public class Round : MonoBehaviour {
         if(winner == 2){
             P2_wins++;
         }
-        round_num++;
+        currentRound++;
+        currentPhase = 0;
+        timeRemaining = POSLIMIT;
         Update_UI();
+        P1S.moveable = true;
+        P2S.moveable = true;
+        P1S.HP = 3;
+        P2S.HP = 3;
     }
 
     private IEnumerator RestrictButtons()

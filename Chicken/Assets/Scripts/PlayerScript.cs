@@ -124,7 +124,7 @@ public class PlayerScript : MonoBehaviour {
 					break;
 				case 2:
 					moveable = false;
-					rb.velocity = new Vector3(50f, 0, 0) * direction;;
+					rb.velocity = new Vector3(20f, 0, 0) * direction;;
 					if(attacking == false) {
 						rb.velocity = new Vector3(0,0,0);
 						moveable = true;
