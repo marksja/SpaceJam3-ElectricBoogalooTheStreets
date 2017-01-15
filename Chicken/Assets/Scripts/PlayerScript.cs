@@ -67,8 +67,11 @@ public class PlayerScript : MonoBehaviour {
 	void Update () {
         //anim = GetComponentInChildren<Animator>();
         //Read Input
-        var x = Input.GetAxis(LeftX) * Time.deltaTime * 10f;
-        var y = -Input.GetAxis(LeftY);
+        float x = Input.GetAxis(LeftX) * Time.deltaTime * 5f;
+
+        if(!grounded) x *= .4f;
+
+        float y = -Input.GetAxis(LeftY);
 
         // Set running if on the ground and unhurt
         if(x!=0 && damaged == false && grounded == true)
