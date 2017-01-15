@@ -13,8 +13,8 @@ public class Round : MonoBehaviour {
     public int round_num;
     public int P1_wins;
     public int P2_wins;
-    public string P2_res;
-    public string P1_res;
+    public string P2_res = "";
+    public string P1_res = "";
     public float speedMult;
     public float timeRemaining;
     public int currentRound;
@@ -46,13 +46,14 @@ public class Round : MonoBehaviour {
     public Sprite[] scoreBar;
     public Sprite[] resBar;
     bool countdown = false;
+    public AudioSource deathSound;
 
     // Use this for initialization
     void Start () {
         P1_wins = 0;
         P2_wins = 0;
         round_num = 0;
-        currentRound = 1;
+        currentRound = 0;
         currentPhase = 0;
         timeRemaining = POSLIMIT;
         Update_UI();
@@ -79,11 +80,11 @@ public class Round : MonoBehaviour {
         if (currentPhase == 1)
         {
             P1S.moveable = false;
-            P1S.moveable = false;
+            P2S.moveable = false;
         }
         if (!countdown)
             timer.text = timeRemaining.ToString("0.00");
-        if (round_num != 0)
+        if (currentRound != 0)
             roundLbl.text = "Round " + currentRound.ToString();
         else
             roundLbl.text = "Round 1";
@@ -93,6 +94,8 @@ public class Round : MonoBehaviour {
             {
                 juicyPhaseName.text = "RESTRICT!";
                 descriptivePhase.text = "choose 2 attacks that your foe may not use.";
+                P1_res = "";
+                P2_res = "";
                 currentPhase = 1;
                 P1S.moveable = false;
                 P2S.moveable = false;
@@ -117,6 +120,13 @@ public class Round : MonoBehaviour {
                 }
                 else{
                     //If player 2 has not selected 2 buttons
+                    if (P2_res.Length == 0)
+                        P2_res = "AB";
+                    else if (P2_res.Length == 1)
+                        if (P2_res[0] != 'A')
+                            P2_res += "A";
+                        else
+                            P2_res += "B";
                 }
                 if(P2_res.Length == 2){
                     if (P2_res.Contains("A"))
@@ -130,13 +140,26 @@ public class Round : MonoBehaviour {
                 }
                 else{
                     //If player 1 has not selected 2 buttons
+                    if (P2_res.Length == 0)
+                        P2_res = "AB";
+                    else if (P2_res.Length == 1)
+                        if (P2_res[0] != 'A')
+                            P2_res += "A";
+                        else
+                            P2_res += "B";
                 }
             }
             else if (currentPhase == 2)
             {
                 currentPhase = 3;       //game over
-
-                End_Round();
+                timeRemaining = 3.0f;
+            }
+            else if(currentPhase == 3)
+            {
+                currentPhase = 0;
+                timeRemaining = POSLIMIT;
+                juicyPhaseName.text = "POSITION!";
+                descriptivePhase.text = "Move to your starting position of choice.";
             }
         }
         timeRemaining -= Time.deltaTime;
@@ -172,9 +195,16 @@ public class Round : MonoBehaviour {
                 }
             case 2:
                 {
-                   
-                    if(P1S.HP <= 0){
+
+       //             if (P2S.HP == P1S.HP && (P2S.HP == 0 || timeRemaining <= 0))
+        //            {
+         //               P1S.moveable = false;
+          //              P2S.moveable = false;
+           //             End_Round(0);
+            //        }
+                    if (P1S.HP <= 0){
                         //Player 1 loses
+                        deathSound.Play();
                         Debug.Log("Player 1 Loses");
                         P1S.moveable = false;
                         P2S.moveable = false;
@@ -184,6 +214,7 @@ public class Round : MonoBehaviour {
                     }
                     if(P2S.HP <= 0){
                         //Player 2 loses
+                        deathSound.Play();
                         Debug.Log("Player 2 Loses");
                         P1S.moveable = false;
                         P2S.moveable = false;
@@ -213,28 +244,39 @@ public class Round : MonoBehaviour {
     }
 
     void End_Round(int winner = 0){
+        juicyPhaseName.fontSize -= 40;
+        Debug.Log("Round Ended");
         if(winner == 0){
-            //No one won the round. What do?
+            //DRAW
+            juicyPhaseName.text = "DRAW!";
+            P1_wins++;
+            P1S.SCORE++;
+            P2_wins++;
+            P2S.SCORE++;
         }
         if(winner == 1){
+            juicyPhaseName.text = "Player 1 Wins!";
             P1_wins++;
             P1S.SCORE++;
             P1Score.sprite = scoreBar[P1S.SCORE];
         }
         if(winner == 2){
+            juicyPhaseName.text = "Player 2 Wins!";
             P2_wins++;
             P2S.SCORE++;
             P2Score.sprite = scoreBar[P2S.SCORE];
         }
-        juicyPhaseName.fontSize -= 40;
         currentRound++;
-        currentPhase = 0;
-        timeRemaining = POSLIMIT;
-        Update_UI();
+        timeRemaining = 3.0f;
+    //    currentPhase = 0;
+    //    timeRemaining = POSLIMIT;
+    //    Update_UI();
         P1S.moveable = true;
         P2S.moveable = true;
         P1S.HP = 3;
         P2S.HP = 3;
+        descriptivePhase.text = P1_wins + " - " + P2_wins;
+        Update_UI();
     }
 
     private IEnumerator RestrictButtons()
@@ -259,6 +301,7 @@ public class Round : MonoBehaviour {
     
     private IEnumerator startFight()
     {
+        timeRemaining = FIGHTLIMIT;
         countdown = true;
         descriptivePhase.text = "";
         timer.text = FIGHTLIMIT.ToString("0.00");

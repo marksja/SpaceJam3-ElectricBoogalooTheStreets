@@ -4,7 +4,8 @@ using System.Collections;
 public class Dash : MonoBehaviour {
 
 	public int player_owner;
-	PlayerScript enemy_script;	
+	PlayerScript enemy_script;
+    public AudioSource hit, clank;
 	// Use this for initialization
 	void Start () {
 	
@@ -18,6 +19,7 @@ public class Dash : MonoBehaviour {
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
 		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
+            hit.Play();
 			if(other.name[6] == (char)(player_owner + '0')){
 				return;
 			}
@@ -31,6 +33,8 @@ public class Dash : MonoBehaviour {
 			//Apply Knockback
 		}
 		if(other.name == "Dash_Prefab(Clone)"){
+            if (!clank.isPlaying)
+                clank.Play();
 			//delete other projectile
 		}
 	}

@@ -6,8 +6,9 @@ public class Lazor : MonoBehaviour {
 	public int player_owner;
 	PlayerScript enemy_script;
 	Rigidbody rb;
-	// Use this for initialization
-	void Start () {
+    public AudioSource hit, clank;
+    // Use this for initialization
+    void Start () {
 		rb = GetComponent<Rigidbody>();
 	}
 	
@@ -18,8 +19,10 @@ public class Lazor : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 		Debug.Log("???");
-		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player"){
-			if(other.name[6] == (char)(player_owner + '0')){
+		if(other.name.Length > 6 && other.name.Substring(0,6) == "Player")
+        {
+            hit.Play();
+            if (other.name[6] == (char)(player_owner + '0')){
 				return;
 			}
 			enemy_script = other.GetComponent<PlayerScript>();
@@ -31,9 +34,12 @@ public class Lazor : MonoBehaviour {
 			other.GetComponent<Rigidbody>().AddForce(rb.velocity * 100 + Vector3.up*300f);
 			Destroy(this.gameObject);
 		}
-		if(other.name == "Lazor_Prefab(Clone)"){
-			//delete other projectile
-		}
+		if(other.name == "Lazor_Prefab(Clone)")
+        {
+            if (!clank.isPlaying)
+                clank.Play();
+            //delete other projectile
+        }
 		
 	}
 }
