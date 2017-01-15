@@ -254,6 +254,7 @@ public class PlayerScript : MonoBehaviour {
                 newVX = rb.velocity.x + dv;
                 if (Mathf.Abs(newVX) > maxSpeed)
                     newVX = maxSpeed * (newVX/Mathf.Abs(newVX));
+                rb.velocity = new Vector3(newVX * speedMult, rb.velocity.y, 0);
             }
             else
             {
@@ -261,8 +262,8 @@ public class PlayerScript : MonoBehaviour {
                 newVX = rb.velocity.x + dv;
                 if (Mathf.Abs(newVX) > airSpeed)
                     newVX = airSpeed * (newVX / Mathf.Abs(newVX));
+                rb.velocity = new Vector3(newVX * speedMult, rb.velocity.y, 0);
             }
-            rb.velocity = new Vector3(newVX * speedMult / drag, rb.velocity.y, 0);
 
             if (x > 0){
 				direction = 1;
